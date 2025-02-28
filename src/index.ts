@@ -122,7 +122,7 @@ const logo_image_path = "assets/images/ZAMAN_EGTESAD_LOGO.png"
 
 const bot = new Bot<MyContext>("8056950160:AAGIF7ColbOQH5wF6lhWC2HNAib5mb624K8");
 
-const ImageIsSet = `✅ تصویر خبر تنظیم شده است`;
+const ImageIsSet = `✅ تصویر📸 خبر تنظیم شده است`;
 const ImageIsNotSet = "❌ تصویر خبر تنظیم نشده است.";
 const HeadlineIsNotSet = "❌ روتیتر خبر تنظیم نشده است.";
 const SubHeadlineIsNotSet = "❌ تیتراصلی خبر تنظیم نشده است.";
@@ -282,7 +282,7 @@ const finish = new Menu<MyContext>("finish")
         const notificationMessage = await ctx.reply("در حال ساخت پست ها ...");
         await ctx.deleteMessage().catch(() => { }); // Remove menu if possible
         if (ctx.session.PaperCaptionLarg) {
-            ctx.session.ImageOutpuPathPaperCaptionLarg = "./assets/OutPut/PaperCaptionLarg.png";
+            ctx.session.ImageOutpuPathPaperCaptionLarg = "./assets/OutPut/PaperCaptionLarg"+ctx.chatId+".png";
                 // `./assets/OutPut/PaperCaptionLarg-${ctx.chatId}.png`;
                 // 
             ctx.session.DaysIntoFuture = 0;
@@ -312,17 +312,17 @@ const finish = new Menu<MyContext>("finish")
                 console.error(`stderr: ${result.stderr}`);
             }
 
-            const userInfo = JSON.stringify(ctx.from, null, 2);
+            // const userInfo = JSON.stringify(ctx.from, null, 2);
 
-            // Send that info to your channel
+            // // Send that info to your channel
 
-            await bot.api.sendPhoto(
-                -1002302354978,
-                new InputFile(ctx.session.ImageOutpuPathPaperCaptionLarg!),
-                {
-                    caption: ` تصویر  عکس نوشته بزرگ \n User :\n${userInfo}`
-                }
-            )
+            // await bot.api.sendPhoto(
+            //     -1002302354978,
+            //     new InputFile(ctx.session.ImageOutpuPathPaperCaptionLarg!),
+            //     {
+            //         caption: ` تصویر  عکس نوشته بزرگ \n User :\n${userInfo}`
+            //     }
+            // )
             
             // send the image created
             await ctx.replyWithPhoto(
@@ -334,7 +334,7 @@ const finish = new Menu<MyContext>("finish")
         };
 
         if (ctx.session.PaperCaptionSmall) {
-            ctx.session.ImageOutpuPathPaperCaptionSmall = `assets/OutPut/PaperCaptionSmal-${ctx.chatId}.png`;
+            ctx.session.ImageOutpuPathPaperCaptionSmall = "./assets/OutPut/PaperCaptionSmal"+ctx.chatId+".png";
             ctx.session.DaysIntoFuture = 0;
             const watermark = ctx.session.watermark ? 1 : 0;
             const command = "/venv/bin/python3";
@@ -382,7 +382,7 @@ const finish = new Menu<MyContext>("finish")
         };
         
         if (ctx.session.PaperTemplateLarg) {
-            ctx.session.ImageOutpuPathPaperTemplateLarg = `./assets/OutPut/PaperTemplateLarg-${ctx.chatId}.png`;
+            ctx.session.ImageOutpuPathPaperTemplateLarg = "./assets/OutPut/PaperTemplateLarg"+ctx.chatId+".png";
             ctx.session.DaysIntoFuture = 0;
             const watermark = ctx.session.watermark ? 1 : 0;
             const command = "/venv/bin/python3";
@@ -430,7 +430,7 @@ const finish = new Menu<MyContext>("finish")
         };
 
         if (ctx.session.PaperTemplateSmall) {
-            ctx.session.ImageOutpuPathPaperTemplateSmall = `./assets/OutPut/PaperTemplateSmall-${ctx.chatId}.png`;
+            ctx.session.ImageOutpuPathPaperTemplateSmall = "./assets/OutPut/PaperTemplateSmall"+ctx.chatId+".png";
             ctx.session.DaysIntoFuture = 0;
             const watermark = ctx.session.watermark ? 1 : 0;
             const command = "/venv/bin/python3";
@@ -1093,6 +1093,11 @@ async function approve(
 
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start The Damn Bot %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// 2. Global error handler with bot.catch()
+bot.catch((err) => {
+  console.error("Error in grammY:", err);
+  // You can log it somewhere or just ignore it—grammY will keep running
+});
 
 bot.start();
 console.log("Bot is running...");
