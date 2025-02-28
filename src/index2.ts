@@ -1,7 +1,3 @@
-import * as dotenv from "dotenv";
-dotenv.config();
-
-
 
 
 import { Bot, Context, session, type SessionFlavor } from "grammy";
@@ -26,7 +22,7 @@ type NameConversation = Conversation<MyContext, NameContext>;
 type EmailContext = HydrateFlavor<Context>;
 type EmailConversation = Conversation<MyContext, EmailContext>;
 
-const bot = new Bot<MyContext>(process.env.BOT_TOKEN!);
+const bot = new Bot<MyContext>("8056950160:AAGIF7ColbOQH5wF6lhWC2HNAib5mb624K8");
 
 bot.use(session({ initial: () => ({}) }));
 bot.use(conversations());

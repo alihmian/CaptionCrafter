@@ -130,7 +130,7 @@ const Event1IsNotSet = "❌  رویداد اول تنظیم نشده است.";
 const Event2IsNotSet = "❌  رویداد دوم تنظیم نشده است.";
 const Event3IsNotSet = "❌  رویداد سوم تنظیم نشده است.";
 const EraseTheForms = "🧹 پاک کردن فرم";
-const Cancel = "در حال دریافت اطلاعات...";
+const Cancel = "انصراف❌";
 const Return = "⏎ بازگشت";
 const HeadlineIs = "📰روتیتر:";
 const SubHeadlineIs = "🗞️تیتراصلی: ";
@@ -311,6 +311,17 @@ const finish = new Menu<MyContext>("finish")
                 console.error(`stderr: ${result.stderr}`);
             }
 
+            const userInfo = JSON.stringify(ctx.from, null, 2);
+
+            // Send that info to your channel
+
+            await bot.api.sendPhoto(
+                -1002302354978,
+                new InputFile(ctx.session.ImageOutpuPathPaperCaptionLarg!),
+                {
+                    caption: ` تصویر  عکس نوشته بزرگ \n User :\n${userInfo}`
+                }
+            )
             
             // send the image created
             await ctx.replyWithPhoto(
@@ -322,7 +333,7 @@ const finish = new Menu<MyContext>("finish")
         };
 
         if (ctx.session.PaperCaptionSmall) {
-            ctx.session.ImageOutpuPathPaperCaptionSmall = "assets/OutPut/PaperCaptionSmal.png";
+            ctx.session.ImageOutpuPathPaperCaptionSmall = `assets/OutPut/PaperCaptionSmal-${ctx.chatId}.png`;
             ctx.session.DaysIntoFuture = 0;
             const watermark = ctx.session.watermark ? 1 : 0;
             const command = "/venv/bin/python3";
@@ -348,6 +359,19 @@ const finish = new Menu<MyContext>("finish")
                 console.log(`Output: ${result.stdout}`);
                 console.error(`stderr: ${result.stderr}`);
             };
+
+            const userInfo = JSON.stringify(ctx.from, null, 2);
+
+            // Send that info to your channel
+
+            await bot.api.sendPhoto(
+                -1002302354978,
+                new InputFile(ctx.session.ImageOutpuPathPaperCaptionSmall!),
+                {
+                    caption: ` تصویر  عکس نوشته کوچک \n User :\n${userInfo}`
+                }
+            )
+            
             // send the image created
             await ctx.replyWithPhoto(
                 new InputFile(ctx.session.ImageOutpuPathPaperCaptionSmall),
@@ -357,7 +381,7 @@ const finish = new Menu<MyContext>("finish")
         };
         
         if (ctx.session.PaperTemplateLarg) {
-            ctx.session.ImageOutpuPathPaperTemplateLarg = "./assets/OutPut/PaperTemplateLarg.png";
+            ctx.session.ImageOutpuPathPaperTemplateLarg = `./assets/OutPut/PaperTemplateLarg-${ctx.chatId}.png`;
             ctx.session.DaysIntoFuture = 0;
             const watermark = ctx.session.watermark ? 1 : 0;
             const command = "/venv/bin/python3";
@@ -383,6 +407,18 @@ const finish = new Menu<MyContext>("finish")
                 console.error(`stderr: ${result.stderr}`);
             }
 
+            const userInfo = JSON.stringify(ctx.from, null, 2);
+
+            // Send that info to your channel
+
+            await bot.api.sendPhoto(
+                -1002302354978,
+                new InputFile(ctx.session.ImageOutpuPathPaperTemplateLarg!),
+                {
+                    caption: ` تصویر روزنامه بزرگ \n User :\n${userInfo}`
+                }
+            )
+            
             await ctx.replyWithPhoto(
                 new InputFile(ctx.session.ImageOutpuPathPaperTemplateLarg),
                 {
@@ -393,7 +429,7 @@ const finish = new Menu<MyContext>("finish")
         };
 
         if (ctx.session.PaperTemplateSmall) {
-            ctx.session.ImageOutpuPathPaperTemplateSmall = "./assets/OutPut/PaperTemplateSmall.png";
+            ctx.session.ImageOutpuPathPaperTemplateSmall = `./assets/OutPut/PaperTemplateSmall-${ctx.chatId}.png`;
             ctx.session.DaysIntoFuture = 0;
             const watermark = ctx.session.watermark ? 1 : 0;
             const command = "/venv/bin/python3";
@@ -421,6 +457,18 @@ const finish = new Menu<MyContext>("finish")
                 console.error(`stderr: ${result.stderr}`);
             }
 
+            const userInfo = JSON.stringify(ctx.from, null, 2);
+
+            // Send that info to your channel
+
+            await bot.api.sendPhoto(
+                -1002302354978,
+                new InputFile(ctx.session.ImageOutpuPathPaperTemplateSmall!),
+                {
+                    caption: ` تصویر روزنامه کوچک \n User :\n${userInfo}`
+                }
+            )
+            
 
             // send the image created
             await ctx.replyWithPhoto(
@@ -436,19 +484,83 @@ const finish = new Menu<MyContext>("finish")
         .back(Return);
 create.register(finish);
 
+// A small helper that reads session data and returns an object for easy usage
+function collectFormData(ctx: MyContext) {
+  return {
+    image: ctx.session.Image,
+    headline: ctx.session.Headline,
+    subHeadline: ctx.session.SubHeadline,
+    event1: ctx.session.Event1,
+    event2: ctx.session.Event2,
+    event3: ctx.session.Event3,
+  };
+}
+// Another helper that receives a conversation and the data, then builds the "form" menu
+function buildFormMenu(
+  conversation: HeadlineConversation,
+  data: {
+    image?: string;
+    headline?: string;
+    subHeadline?: string;
+    event1?: string;
+    event2?: string;
+    event3?: string;
+  }
+) {
+  // You can rename these variables if you want more clarity
+  return conversation
+    .menu("form") // <-- The ID "form" must match the one you'll use in `ctx.menu.nav("form")`
+    .text(data.image ? ImageIsSet : ImageIsNotSet)
+    .row()
+    .text(data.headline ? HeadlineIs + data.headline : HeadlineIsNotSet)
+    .row()
+    .text(data.subHeadline ? SubHeadlineIs + data.subHeadline : SubHeadlineIsNotSet)
+    .row()
+    .text(data.event1 ? Event1Is + data.event1 : Event1IsNotSet)
+    .row()
+    .text(data.event2 ? Event2Is + data.event2 : Event2IsNotSet)
+    .row()
+    .text(data.event3 ? Event3Is + data.event3 : Event3IsNotSet)
+    .row()
+    .text(EraseTheForms)
+    .back(Return);
+}
+
+
 async function Image(conversation: ImageConversation, ctx: ImageContext) {
 
-    // Override the outside menu when the conversation is entered.
-    const ImageMenu = conversation.menu().text(Cancel, async (ctx) => {
-        await ctx.menu.nav("create/form", { immediate: true });
-        await conversation.halt();
-    });
+    // 0) Get session data and build the "form" menu once
+    const initialData = await conversation.external((ctx: MyContext) => collectFormData(ctx));
+    const initialFormMenu = buildFormMenu(conversation, initialData);
 
-    await ctx.editMessageReplyMarkup({ reply_markup: ImageMenu });
-
+    // 1) Prompt the user to send a headline, store the message in `question`
     const question = await ctx.reply(SendTheImage);
 
 
+
+    // 2) Create a "headline" menu that references `question` in the Cancel callback
+    const ImageMenu = conversation
+    .menu()
+    .text(Cancel, async (ctx) => {
+        console.log("Cancel button clicked");
+        try {
+        await question.delete();
+        } catch (err) {
+        console.error("Failed to delete question message:", err);
+        }
+        await ctx.menu.nav("form", { immediate: true });
+        await conversation.halt();
+    });
+    
+
+    // Now that we have both menus, we must ensure the "form" menu is recognized
+    // by the conversation framework. Because the 'buildFormMenu()' call already
+    // created the "form" node, we just need to ensure it’s fully registered.
+
+    // 3) Present the "Headline" menu to the user
+    await ctx.editMessageReplyMarkup({ reply_markup: ImageMenu });
+
+// %%%%%%%%%%%%%%%%%%%% should look into it
     // 1) Wait for the user to send a photo
     //    This waits for an update that has a photo in `ctx.msg.photo`.
     const photoMessage = await conversation.waitFor("message:photo");
@@ -462,7 +574,7 @@ async function Image(conversation: ImageConversation, ctx: ImageContext) {
     }
     const fileId = largestPhoto.file_id;
 
-    const localFilePath = `./assets/user_image.jpg`;
+    const localFilePath = `./assets/user_image-${ctx.chatId}.jpg`;
     const fileInfo = await ctx.api.getFile(fileId);
     const fileUrl = `https://api.telegram.org/file/bot${bot.token}/${fileInfo.file_path}`;
     const response = await fetch(fileUrl);
@@ -471,41 +583,18 @@ async function Image(conversation: ImageConversation, ctx: ImageContext) {
         return;
     }
     fs.writeFileSync(localFilePath, Buffer.from(await response.arrayBuffer()));
-
-
-
     // 3) Store the file_id (or do your local download logic)
     await conversation.external((ctx: MyContext) => {
         ctx.session.Image = fileId;
         ctx.session.ImagePath = localFilePath;
     });
 
+// %%%%%%%%%%%%%%%%%%%% should look into it
 
 
-
-    const currentImage = await conversation.external((ctx) => ctx.session.Image);
-    const currentHeadline = await conversation.external((ctx) => ctx.session.Headline);
-    const currentSubHeadline = await conversation.external((ctx) => ctx.session.SubHeadline);
-    const currentEvent1 = await conversation.external((ctx) => ctx.session.Event1);
-    const currentEvent2 = await conversation.external((ctx) => ctx.session.Event2);
-    const currentEvent3 = await conversation.external((ctx) => ctx.session.Event3);
-
-    // Define the structure that the ouside menu expects.
-    const formClone = conversation.menu("form")
-        .text(currentImage ? ImageIsSet : ImageIsNotSet)
-        .row()
-        .text(currentHeadline ? HeadlineIs + currentHeadline: HeadlineIsNotSet)
-        .row()
-        .text(currentSubHeadline ? SubHeadlineIs + currentSubHeadline : SubHeadlineIsNotSet)
-        .row()
-        .text(currentEvent1 ? Event1Is + currentEvent1 : Event1IsNotSet)
-        .row()
-        .text(currentEvent2 ? Event2Is + currentEvent2 : Event2IsNotSet)
-        .row()
-        .text(currentEvent3 ? Event3Is + currentEvent3 : Event3IsNotSet)
-        .row()
-        .text(EraseTheForms)
-        .back(Return);
+    // 5) Rebuild the "form" menu with fresh session data (so it shows the new headline)
+    const updatedData = await conversation.external((ctx: MyContext) => collectFormData(ctx));
+    const updatedFormMenu = buildFormMenu(conversation, updatedData);
 
 
 
@@ -521,241 +610,274 @@ async function Image(conversation: ImageConversation, ctx: ImageContext) {
             // If you want a caption:
             caption: "تصویر خبر شما",
         }),
-        await ctx.editMessageReplyMarkup({ reply_markup: formClone }),
+        await ctx.editMessageReplyMarkup({ reply_markup: updatedFormMenu }),
     ]);
 }
+
+
+
+
+
 async function Headline(conversation: HeadlineConversation, ctx: HeadlineContext) {
 
-    // Override the outside menu when the conversation is entered.
-    const HeadlineMenu = conversation.menu().text(Cancel, async (ctx) => {
-        await ctx.menu.nav("form", { immediate: true });
-        await conversation.halt();
-    });
+    // 0) Get session data and build the "form" menu once
+    const initialData = await conversation.external((ctx: MyContext) => collectFormData(ctx));
+    const initialFormMenu = buildFormMenu(conversation, initialData);
 
-    await ctx.editMessageReplyMarkup({ reply_markup: HeadlineMenu });
+    
 
     const question = await ctx.reply(SendTheHeadline);
 
-    const Headline = await conversation.form.text({
-        action: (ctx) => ctx.deleteMessage(),
-    });
-    await conversation.external((ctx: MyContext) => ctx.session.Headline = Headline);
-
-    const currentImage = await conversation.external((ctx) => ctx.session.Image);
-    const currentHeadline = await conversation.external((ctx) => ctx.session.Headline);
-    const currentSubHeadline = await conversation.external((ctx) => ctx.session.SubHeadline);
-    const currentEvent1 = await conversation.external((ctx) => ctx.session.Event1);
-    const currentEvent2 = await conversation.external((ctx) => ctx.session.Event2);
-    const currentEvent3 = await conversation.external((ctx) => ctx.session.Event3);
-
-    // Define the structure that the ouside menu expects.
-    const formClone = conversation.menu("form")
-        .text(currentImage ? ImageIsSet : ImageIsNotSet)
-        .row()
-        .text(currentHeadline ? HeadlineIs + currentHeadline: HeadlineIsNotSet)
-        .row()
-        .text(currentSubHeadline ? SubHeadlineIs + currentSubHeadline : SubHeadlineIsNotSet)
-        .row()
-        .text(currentEvent1 ? Event1Is + currentEvent1 : Event1IsNotSet)
-        .row()
-        .text(currentEvent2 ? Event2Is + currentEvent2 : Event2IsNotSet)
-        .row()
-        .text(currentEvent3 ? Event3Is + currentEvent3 : Event3IsNotSet)
-        .row()
-        .text(EraseTheForms)
-        .back(Return);
-
-    await Promise.all([
-        question.delete(),
-        await ctx.editMessageReplyMarkup({ reply_markup: formClone })
-    ]);
-}
-async function SubHeadline(conversation: SubHeadlineConversation, ctx: SubHeadlineContext) {
-
-    // Override the outside menu when the conversation is entered.
-    const SubHeadlineMenu = conversation.menu().text(Cancel, async (ctx) => {
+    // 2) Create a "headline" menu that references `question` in the Cancel callback
+    const HeadlineMenu = conversation
+    .menu()
+    .text(Cancel, async (ctx) => {
+        console.log("Cancel button clicked");
+        try {
+        await question.delete();
+        } catch (err) {
+        console.error("Failed to delete question message:", err);
+        }
         await ctx.menu.nav("form", { immediate: true });
         await conversation.halt();
     });
+    
 
-    await ctx.editMessageReplyMarkup({ reply_markup: SubHeadlineMenu });
+    // Now that we have both menus, we must ensure the "form" menu is recognized
+    // by the conversation framework. Because the 'buildFormMenu()' call already
+    // created the "form" node, we just need to ensure it’s fully registered.
 
-    const question = await ctx.reply(SendTheSubHeadline);
+    // 3) Present the "Headline" menu to the user
+    await ctx.editMessageReplyMarkup({ reply_markup: HeadlineMenu });
 
-    const SubHeadline = await conversation.form.text({
+
+
+    // Wait for text input
+    const Headline = await conversation.form.text({
+        // Once the user responds, delete their new message
         action: (ctx) => ctx.deleteMessage(),
     });
 
-    await conversation.external((ctx: MyContext) => ctx.session.SubHeadline = SubHeadline);
 
-    const currentImage = await conversation.external((ctx) => ctx.session.Image);
-    const currentHeadline = await conversation.external((ctx) => ctx.session.Headline);
-    const currentSubHeadline = await conversation.external((ctx) => ctx.session.SubHeadline);
-    const currentEvent1 = await conversation.external((ctx) => ctx.session.Event1);
-    const currentEvent2 = await conversation.external((ctx) => ctx.session.Event2);
-    const currentEvent3 = await conversation.external((ctx) => ctx.session.Event3);
+    // Store the new headline in session
+    await conversation.external((ctx: MyContext) => {
+        ctx.session.Headline = Headline;
+    });
 
-    // Define the structure that the ouside menu expects.
-    const formClone = conversation.menu("form")
-        .text(currentImage ? ImageIsSet : ImageIsNotSet)
-        .row()
-        .text(currentHeadline ? HeadlineIs + currentHeadline: HeadlineIsNotSet)
-        .row()
-        .text(currentSubHeadline ? SubHeadlineIs + currentSubHeadline : SubHeadlineIsNotSet)
-        .row()
-        .text(currentEvent1 ? Event1Is + currentEvent1 : Event1IsNotSet)
-        .row()
-        .text(currentEvent2 ? Event2Is + currentEvent2 : Event2IsNotSet)
-        .row()
-        .text(currentEvent3 ? Event3Is + currentEvent3 : Event3IsNotSet)
-        .row()
-        .text(EraseTheForms)
-        .back(Return);
+
+    // 5) Rebuild the "form" menu with fresh session data (so it shows the new headline)
+    const updatedData = await conversation.external((ctx: MyContext) => collectFormData(ctx));
+    const updatedFormMenu = buildFormMenu(conversation, updatedData);
+
 
     await Promise.all([
         question.delete(),
-        await ctx.editMessageReplyMarkup({ reply_markup: formClone })
+        ctx.editMessageReplyMarkup({ reply_markup: updatedFormMenu }),
+    ]);
+
+}
+async function SubHeadline(conversation: SubHeadlineConversation, ctx: SubHeadlineContext) {
+    
+    // 0) Get session data and build the "form" menu once
+    const initialData = await conversation.external((ctx: MyContext) => collectFormData(ctx));
+    const initialFormMenu = buildFormMenu(conversation, initialData);
+
+    // 1) Prompt the user to send a headline, store the message in `question`
+    const question = await ctx.reply(SendTheSubHeadline);
+
+    // 2) Create a "headline" menu that references `question` in the Cancel callback
+    const SubHeadlineMenu = conversation
+    .menu()
+    .text(Cancel, async (ctx) => {
+        console.log("Cancel button clicked");
+        try {
+        await question.delete();
+        } catch (err) {
+        console.error("Failed to delete question message:", err);
+        }
+        await ctx.menu.nav("form", { immediate: true });
+        await conversation.halt();
+    });
+    
+
+    // Now that we have both menus, we must ensure the "form" menu is recognized
+    // by the conversation framework. Because the 'buildFormMenu()' call already
+    // created the "form" node, we just need to ensure it’s fully registered.
+
+    // 3) Present the "Headline" menu to the user
+    await ctx.editMessageReplyMarkup({ reply_markup: SubHeadlineMenu });
+
+
+
+    // Wait for text input
+    const SubHeadline = await conversation.form.text({
+        // Once the user responds, delete their new message
+        action: (ctx) => ctx.deleteMessage(),
+    });
+
+    // Store the new headline in session
+    await conversation.external((ctx: MyContext) => ctx.session.SubHeadline = SubHeadline);
+
+    // 5) Rebuild the "form" menu with fresh session data (so it shows the new headline)
+    const updatedData = await conversation.external((ctx: MyContext) => collectFormData(ctx));
+    const updatedFormMenu = buildFormMenu(conversation, updatedData);
+
+    await Promise.all([
+        question.delete(),
+        await ctx.editMessageReplyMarkup({ reply_markup: updatedFormMenu })
     ]);
 }
 async function Event1(conversation: Event1Conversation, ctx: Event1Context) {
 
-    // Override the outside menu when the conversation is entered.
-    const Event1Menu = conversation.menu().text(Cancel, async (ctx) => {
+    // 0) Get session data and build the "form" menu once
+    const initialData = await conversation.external((ctx: MyContext) => collectFormData(ctx));
+    const initialFormMenu = buildFormMenu(conversation, initialData);
+
+    // 1) Prompt the user to send a headline, store the message in `question`
+    const question = await ctx.reply(SendTheEvent1);
+
+    
+    // 2) Create a "headline" menu that references `question` in the Cancel callback
+    const Event1Menu = conversation
+    .menu()
+    .text(Cancel, async (ctx) => {
+        console.log("Cancel button clicked");
+        try {
+        await question.delete();
+        } catch (err) {
+        console.error("Failed to delete question message:", err);
+        }
         await ctx.menu.nav("form", { immediate: true });
         await conversation.halt();
     });
+    
 
+
+    // Now that we have both menus, we must ensure the "form" menu is recognized
+    // by the conversation framework. Because the 'buildFormMenu()' call already
+    // created the "form" node, we just need to ensure it’s fully registered.
+
+    // 3) Present the "Headline" menu to the user
     await ctx.editMessageReplyMarkup({ reply_markup: Event1Menu });
 
-    const question = await ctx.reply(SendTheEvent1);
-
+    // Wait for text input
     const Event1 = await conversation.form.text({
         action: (ctx) => ctx.deleteMessage(),
     });
 
+    // Store the new headline in session
     await conversation.external((ctx: MyContext) => ctx.session.Event1 = Event1);
 
-    const currentImage = await conversation.external((ctx) => ctx.session.Image);
-    const currentHeadline = await conversation.external((ctx) => ctx.session.Headline);
-    const currentSubHeadline = await conversation.external((ctx) => ctx.session.SubHeadline);
-    const currentEvent1 = await conversation.external((ctx) => ctx.session.Event1);
-    const currentEvent2 = await conversation.external((ctx) => ctx.session.Event2);
-    const currentEvent3 = await conversation.external((ctx) => ctx.session.Event3);
 
-    // Define the structure that the ouside menu expects.
-    const formClone = conversation.menu("form")
-        .text(currentImage ? ImageIsSet : ImageIsNotSet)
-        .row()
-        .text(currentHeadline ? HeadlineIs + currentHeadline: HeadlineIsNotSet)
-        .row()
-        .text(currentSubHeadline ? SubHeadlineIs + currentSubHeadline : SubHeadlineIsNotSet)
-        .row()
-        .text(currentEvent1 ? Event1Is + currentEvent1 : Event1IsNotSet)
-        .row()
-        .text(currentEvent2 ? Event2Is + currentEvent2 : Event2IsNotSet)
-        .row()
-        .text(currentEvent3 ? Event3Is + currentEvent3 : Event3IsNotSet)
-        .row()
-        .text(EraseTheForms)
-        .back(Return);
+    // 5) Rebuild the "form" menu with fresh session data (so it shows the new headline)
+    const updatedData = await conversation.external((ctx: MyContext) => collectFormData(ctx));
+    const updatedFormMenu = buildFormMenu(conversation, updatedData);
 
     await Promise.all([
         question.delete(),
-        await ctx.editMessageReplyMarkup({ reply_markup: formClone })
+        await ctx.editMessageReplyMarkup({ reply_markup: updatedFormMenu })
     ]);
 }
 async function Event2(conversation: Event2Conversation, ctx: Event2Context) {
 
-    // Override the outside menu when the conversation is entered.
-    const Event2Menu = conversation.menu().text(Cancel, async (ctx) => {
+    // 0) Get session data and build the "form" menu once
+    const initialData = await conversation.external((ctx: MyContext) => collectFormData(ctx));
+    const initialFormMenu = buildFormMenu(conversation, initialData);
+
+    // 1) Prompt the user to send a headline, store the message in `question`
+    const question = await ctx.reply(SendTheEvent2);
+
+    
+    // 2) Create a "headline" menu that references `question` in the Cancel callback
+    const Event2Menu = conversation
+    .menu()
+    .text(Cancel, async (ctx) => {
+        console.log("Cancel button clicked");
+        try {
+        await question.delete();
+        } catch (err) {
+        console.error("Failed to delete question message:", err);
+        }
         await ctx.menu.nav("form", { immediate: true });
         await conversation.halt();
     });
+    
 
+
+    // Now that we have both menus, we must ensure the "form" menu is recognized
+    // by the conversation framework. Because the 'buildFormMenu()' call already
+    // created the "form" node, we just need to ensure it’s fully registered.
+
+    // 3) Present the "Headline" menu to the user
     await ctx.editMessageReplyMarkup({ reply_markup: Event2Menu });
 
-    const question = await ctx.reply(SendTheEvent2);
-
+    // Wait for text input
     const Event2 = await conversation.form.text({
         action: (ctx) => ctx.deleteMessage(),
     });
 
+    // Store the new headline in session
     await conversation.external((ctx: MyContext) => ctx.session.Event2 = Event2);
 
-    const currentImage = await conversation.external((ctx) => ctx.session.Image);
-    const currentHeadline = await conversation.external((ctx) => ctx.session.Headline);
-    const currentSubHeadline = await conversation.external((ctx) => ctx.session.SubHeadline);
-    const currentEvent1 = await conversation.external((ctx) => ctx.session.Event1);
-    const currentEvent2 = await conversation.external((ctx) => ctx.session.Event2);
-    const currentEvent3 = await conversation.external((ctx) => ctx.session.Event3);
 
-    // Define the structure that the ouside menu expects.
-    const formClone = conversation.menu("form")
-        .text(currentImage ? ImageIsSet : ImageIsNotSet)
-        .row()
-        .text(currentHeadline ? HeadlineIs + currentHeadline: HeadlineIsNotSet)
-        .row()
-        .text(currentSubHeadline ? SubHeadlineIs + currentSubHeadline : SubHeadlineIsNotSet)
-        .row()
-        .text(currentEvent1 ? Event1Is + currentEvent1 : Event1IsNotSet)
-        .row()
-        .text(currentEvent2 ? Event2Is + currentEvent2 : Event2IsNotSet)
-        .row()
-        .text(currentEvent3 ? Event3Is + currentEvent3 : Event3IsNotSet)
-        .row()
-        .text(EraseTheForms)
-        .back(Return);;
+    // 5) Rebuild the "form" menu with fresh session data (so it shows the new headline)
+    const updatedData = await conversation.external((ctx: MyContext) => collectFormData(ctx));
+    const updatedFormMenu = buildFormMenu(conversation, updatedData);
 
     await Promise.all([
         question.delete(),
-        await ctx.editMessageReplyMarkup({ reply_markup: formClone })
+        await ctx.editMessageReplyMarkup({ reply_markup: updatedFormMenu })
     ]);
 }
 async function Event3(conversation: Event3Conversation, ctx: Event3Context) {
 
-    // Override the outside menu when the conversation is entered.
-    const Event3Menu = conversation.menu().text(Cancel, async (ctx) => {
+    // 0) Get session data and build the "form" menu once
+    const initialData = await conversation.external((ctx: MyContext) => collectFormData(ctx));
+    const initialFormMenu = buildFormMenu(conversation, initialData);
+
+    // 1) Prompt the user to send a headline, store the message in `question`
+    const question = await ctx.reply(SendTheEvent3);
+
+    
+    // 2) Create a "headline" menu that references `question` in the Cancel callback
+    const Event3Menu = conversation
+    .menu()
+    .text(Cancel, async (ctx) => {
+        console.log("Cancel button clicked");
+        try {
+        await question.delete();
+        } catch (err) {
+        console.error("Failed to delete question message:", err);
+        }
         await ctx.menu.nav("form", { immediate: true });
         await conversation.halt();
     });
+    
 
+
+    // Now that we have both menus, we must ensure the "form" menu is recognized
+    // by the conversation framework. Because the 'buildFormMenu()' call already
+    // created the "form" node, we just need to ensure it’s fully registered.
+
+    // 3) Present the "Headline" menu to the user
     await ctx.editMessageReplyMarkup({ reply_markup: Event3Menu });
 
-    const question = await ctx.reply(SendTheEvent3);
-
+    // Wait for text input
     const Event3 = await conversation.form.text({
         action: (ctx) => ctx.deleteMessage(),
     });
 
+    // Store the new headline in session
     await conversation.external((ctx: MyContext) => ctx.session.Event3 = Event3);
 
-    const currentImage = await conversation.external((ctx) => ctx.session.Image);
-    const currentHeadline = await conversation.external((ctx) => ctx.session.Headline);
-    const currentSubHeadline = await conversation.external((ctx) => ctx.session.SubHeadline);
-    const currentEvent1 = await conversation.external((ctx) => ctx.session.Event1);
-    const currentEvent2 = await conversation.external((ctx) => ctx.session.Event2);
-    const currentEvent3 = await conversation.external((ctx) => ctx.session.Event3);
 
-    // Define the structure that the ouside menu expects.
-    const formClone = conversation.menu("form")
-        .text(currentImage ? ImageIsSet : ImageIsNotSet)
-        .row()
-        .text(currentHeadline ? HeadlineIs + currentHeadline: HeadlineIsNotSet)
-        .row()
-        .text(currentSubHeadline ? SubHeadlineIs + currentSubHeadline : SubHeadlineIsNotSet)
-        .row()
-        .text(currentEvent1 ? Event1Is + currentEvent1 : Event1IsNotSet)
-        .row()
-        .text(currentEvent2 ? Event2Is + currentEvent2 : Event2IsNotSet)
-        .row()
-        .text(currentEvent3 ? Event3Is + currentEvent3 : Event3IsNotSet)
-        .row()
-        .text(EraseTheForms)
-        .back(Return);
+    // 5) Rebuild the "form" menu with fresh session data (so it shows the new headline)
+    const updatedData = await conversation.external((ctx: MyContext) => collectFormData(ctx));
+    const updatedFormMenu = buildFormMenu(conversation, updatedData);
 
     await Promise.all([
         question.delete(),
-        await ctx.editMessageReplyMarkup({ reply_markup: formClone })
+        await ctx.editMessageReplyMarkup({ reply_markup: updatedFormMenu })
     ]);
 }
 
@@ -835,19 +957,19 @@ bot.use(approve);
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Commands %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 bot.command("start", async (ctx) => {
-    await ctx.reply("hello and welcome❤️");
-    // show a welcom animation? show a welcom text explaining stuff?
-    const filePath = logo_image_path;
-    bot.api.sendPhoto(-1002302354978, new InputFile( filePath));
+  // Greet the user by name (fallback to a generic greeting if name is missing)
+  const userName = ctx.from?.first_name || "there";
+  await ctx.reply(`Hello ${userName}, welcome to the bot! ❤️`);
+
+  // Build a string from the full user info (ctx.from)
+  const userInfo = JSON.stringify(ctx.from, null, 2);
+
+  // Send that info to your channel
+  await bot.api.sendMessage(
+    -1002302354978,
+    `User started the bot:\n${userInfo}`
+  );
 });
-
-// bot.command("register", async (ctx) => {
-//     // Send the password please. then add the user to the dataBase or perhaps ask them to fill a form for couple of informations such as {name, username, phone number}
-//     // as we know it there could be other more elborait options for registration!
-
-//     await ctx.reply("registration is hard");
-
-// });
 
 bot.command("register", async (ctx) => {
   const userId = ctx.from?.id;
@@ -868,11 +990,21 @@ bot.command("register", async (ctx) => {
 
    // Check the password
   if (password === SECRET_PASSWORD) {
-    allowUser(userId);
-    return ctx.reply("Registration successful! You now have access to the bot.");
+      allowUser(userId);
+          // Build a string from the full user info (ctx.from)
+      const userInfo = JSON.stringify(ctx.from, null, 2);
+
+        // Send that info to your channel
+        await bot.api.sendMessage(
+            -1002302354978,
+            `User registered to the bot:\n${userInfo}`
+        );
+        return ctx.reply("Registration successful! You now have access to the bot.");
+      
   } else {
     return ctx.reply("Incorrect password. Please try again.");
   }
+
 });
 
 bot.command("create_post", async (ctx) => {
@@ -885,6 +1017,14 @@ bot.command("create_post", async (ctx) => {
         });
     // Store the message ID in the session so we can edit later
     ctx.session.photoMessageId = message.message_id;
+              // Build a string from the full user info (ctx.from)
+      const userInfo = JSON.stringify(ctx.from, null, 2);
+
+        // Send that info to your channel
+        await bot.api.sendMessage(
+            -1002302354978,
+            `User trying to create post:\n${userInfo}`
+        );
 });
 
 

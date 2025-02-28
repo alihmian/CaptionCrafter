@@ -283,21 +283,21 @@ def generate_news_image(
     base_image.save(output_path)
 
 # Example usage
-generate_news_image(
-    output_path="assets/OutPut/PaperCaptionLarg.png",
-    Headline="بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال",
-    SubHeadline="نوسان سکه رفاه در حوالی قله ، تحلیلگرانران رشد بیشتری را پیش بینی می‌کنند.",
-    user_image_path="user_image.jpg",
-    # todays_events="",
-    # todays_events="رویداد ۱: افزایش نرخ ارز",
-    # todays_events="رویداد ۱: افزایش نرخ ارز\nرویداد ۲: کاهش ارزش سهام",
-    # todays_events=" افزایش نرخ ارز\n کاهش ارزش سهام\n افزایش نرخ طلا",
-    # days_into_future=0,
-    # Headline_font_size=40,
-    # SubHeadline_font_size=50,
-    # slogan_font_size=25,
-    # watermark = True
-)
+# generate_news_image(
+#     output_path="assets/OutPut/PaperCaptionLarg.png",
+#     Headline="بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال",
+#     SubHeadline="نوسان سکه رفاه در حوالی قله ، تحلیلگرانران رشد بیشتری را پیش بینی می‌کنند.",
+#     user_image_path="user_image.jpg",
+#     # todays_events="",
+#     # todays_events="رویداد ۱: افزایش نرخ ارز",
+#     # todays_events="رویداد ۱: افزایش نرخ ارز\nرویداد ۲: کاهش ارزش سهام",
+#     # todays_events=" افزایش نرخ ارز\n کاهش ارزش سهام\n افزایش نرخ طلا",
+#     # days_into_future=0,
+#     # Headline_font_size=40,
+#     # SubHeadline_font_size=50,
+#     # slogan_font_size=25,
+#     # watermark = True
+# )
 
 def main():
     parser = argparse.ArgumentParser()

@@ -80,6 +80,7 @@ def generate_news_image(
     """
     
     event_count = (event1 != "") + (event2 != "") + (event3 != "")
+    print(event_count)
     if event_count == 3:
         todays_events = event1 + "\n" + event2 + "\n" + event3
     elif event_count == 2 :
@@ -386,54 +387,54 @@ def generate_news_image(
     blank.save(output_path)
 
 # Example usage
-generate_news_image(
-    output_path="assets/OutPut/PaperTemplateLarg.png",
-    Headline = "بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال",
-    # Headline = "بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال",
-    # Headline = "بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال",
-    SubHeadline="نوسان سکه رفاه در حوالی قله ، تحلیلگران رشد بیشتری را پیش بینی می‌کنند.",
-    user_image_path="user_image.jpg",
-    event1= "رویداد یک",
-    # event2= "رویداد یک",
-    # event3= "رویداد یک",
-    # todays_events="",
-    # todays_events="رویداد ۱: افزایش نرخ ارز",
-    # todays_events="رویداد ۱: افزایش نرخ ارز\nرویداد ۲: کاهش ارزش سهام",
-    # todays_events=" افزایش نرخ ارز\n کاهش ارزش سهام\n افزایش نرخ طلا",
-    # days_into_future=2,
-    # Headline_font_size=40,
-    # SubHeadline_font_size=50,
-    # slogan_font_size=25,
-    # watermark=False
-)
+# generate_news_image(
+#     output_path="assets/OutPut/PaperTemplateLarg.png",
+#     Headline = "بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال",
+#     # Headline = "بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال",
+#     # Headline = "بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال",
+#     SubHeadline="نوسان سکه رفاه در حوالی قله ، تحلیلگران رشد بیشتری را پیش بینی می‌کنند.",
+#     user_image_path="user_image.jpg",
+#     event1= "رویداد یک",
+#     # event2= "رویداد یک",
+#     # event3= "رویداد یک",
+#     # todays_events="",
+#     # todays_events="رویداد ۱: افزایش نرخ ارز",
+#     # todays_events="رویداد ۱: افزایش نرخ ارز\nرویداد ۲: کاهش ارزش سهام",
+#     # todays_events=" افزایش نرخ ارز\n کاهش ارزش سهام\n افزایش نرخ طلا",
+#     # days_into_future=2,
+#     # Headline_font_size=40,
+#     # SubHeadline_font_size=50,
+#     # slogan_font_size=25,
+#     # watermark=False
+# )
 
-# def main():
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("--input", required=False)
-#     parser.add_argument("--output", required=False)
-#     parser.add_argument("--headline", required=False)
-#     parser.add_argument("--subheadline", required=False)
-#     parser.add_argument("--daysintofuture", required=False)
-#     parser.add_argument("--event1", required=False)
-#     parser.add_argument("--event2", required=False)
-#     parser.add_argument("--event3", required=False)
-#     parser.add_argument("--watermark", required=False)
-#     args = parser.parse_args()
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", required=False)
+    parser.add_argument("--output", required=False)
+    parser.add_argument("--headline", required=False)
+    parser.add_argument("--subheadline", required=False)
+    parser.add_argument("--daysintofuture", required=False)
+    parser.add_argument("--event1", required=False)
+    parser.add_argument("--event2", required=False)
+    parser.add_argument("--event3", required=False)
+    parser.add_argument("--watermark", required=False)
+    args = parser.parse_args()
 
 
 
-#     generate_news_image(
-#         output_path=args.output,
-#         Headline=args.headline,
-#         SubHeadline=args.subheadline,
-#         user_image_path=args.input,
-#         days_into_future=int(args.daysintofuture),
-#         event1=args.event1,
-#         event2=args.event2,
-#         event3=args.event3,
-#         watermark=int(args.watermark)
-#     )
+    generate_news_image(
+        output_path=args.output,
+        Headline=args.headline,
+        SubHeadline=args.subheadline,
+        user_image_path=args.input,
+        days_into_future=int(args.daysintofuture),
+        event1=args.event1,
+        event2=args.event2,
+        event3=args.event3,
+        watermark=int(args.watermark)
+    )
 
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()
     
