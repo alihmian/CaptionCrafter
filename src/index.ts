@@ -124,22 +124,22 @@ const bot = new Bot<MyContext>("8056950160:AAGIF7ColbOQH5wF6lhWC2HNAib5mb624K8")
 
 const ImageIsSet = `✅ تصویر خبر تنظیم شده است`;
 const ImageIsNotSet = "❌ تصویر خبر تنظیم نشده است.";
-const HeadlineIsNotSet = "❌ تیتر خبر تنظیم نشده است.";
-const SubHeadlineIsNotSet = "❌ زیرتیتر خبر تنظیم نشده است.";
+const HeadlineIsNotSet = "❌ روتیتر خبر تنظیم نشده است.";
+const SubHeadlineIsNotSet = "❌ تیتراصلی خبر تنظیم نشده است.";
 const Event1IsNotSet = "❌  رویداد اول تنظیم نشده است.";
 const Event2IsNotSet = "❌  رویداد دوم تنظیم نشده است.";
 const Event3IsNotSet = "❌  رویداد سوم تنظیم نشده است.";
 const EraseTheForms = "🧹 پاک کردن فرم";
-const Cancel = "در حالت دریافت اطلاعات...";
+const Cancel = "در حال دریافت اطلاعات...";
 const Return = "⏎ بازگشت";
-const HeadlineIs = "📰تیتر: ";
-const SubHeadlineIs = "🗞️زیرتیتر: ";
+const HeadlineIs = "📰روتیتر:";
+const SubHeadlineIs = "🗞️تیتراصلی: ";
 const Event1Is = "📅رویداد اول:";
 const Event2Is = "📅رویداد دوم:";
 const Event3Is = "📅رویداد سوم:";
 const SendTheImage = "🌄تصویر خبر را ارسال کنید.";
-const SendTheHeadline = "📰تیتر خبر را وارد کنید.";
-const SendTheSubHeadline = "🗞️زیرتیتر خبر را وارد کنید.";
+const SendTheHeadline = "📰روتیتر خبر را وارد کنید.";
+const SendTheSubHeadline = "🗞️تیتراصلی خبر را وارد کنید.";
 const SendTheEvent1 = "📆رویداد اول را وارد کنید.";
 const SendTheEvent2 = "📆رویداد دوم را وارد کنید.";
 const SendTheEvent3 = "📆رویداد سوم را وارد کنید.";
@@ -316,7 +316,7 @@ const finish = new Menu<MyContext>("finish")
             await ctx.replyWithPhoto(
                 new InputFile(ctx.session.ImageOutpuPathPaperCaptionLarg),
                 {
-                    caption: "تصویر نوشته بزرگ"
+                    caption: "تصویر عکس نوشته بزرگ"
                 });
             
         };
@@ -352,7 +352,7 @@ const finish = new Menu<MyContext>("finish")
             await ctx.replyWithPhoto(
                 new InputFile(ctx.session.ImageOutpuPathPaperCaptionSmall),
                 {
-                    caption: "تصویر نوشته کوچک"
+                    caption: "تصویر عکس نوشته کوچک"
                 });
         };
         
@@ -386,7 +386,7 @@ const finish = new Menu<MyContext>("finish")
             await ctx.replyWithPhoto(
                 new InputFile(ctx.session.ImageOutpuPathPaperTemplateLarg),
                 {
-                    caption: "قالب روزنامه بزرگ"
+                    caption: "تصویر روزنامه بزرگ"
                 }
             );
             
@@ -426,7 +426,7 @@ const finish = new Menu<MyContext>("finish")
             await ctx.replyWithPhoto(
                 new InputFile(ctx.session.ImageOutpuPathPaperTemplateSmall!),
                 {
-                    caption: "قالب روزنامه کوچک"
+                    caption: "تصویر روزنامه کوچک"
                 }
             );
         };

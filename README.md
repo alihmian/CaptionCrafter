@@ -16,6 +16,7 @@ docker build -t my-bot-with-python .
 
 ran : 
 docker run -it --env-file .env my-bot-with-python
+docker run -it  my-bot-with-python
 
 
 /venv/bin/python3 ./src/Craft/PaperCaptionLarg.py  --input "./user_image.jpg" --output "./assets/OutPut/PaperCaptionLarg2.png" --headline "تیتر کوفتی" --subheadline "زیرتیترشه" --daysintofuture "0" --event1 "undefined" --event2 "undefined" --event3 "undefined" --watermark 0

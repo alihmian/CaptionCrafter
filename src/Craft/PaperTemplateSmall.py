@@ -27,7 +27,7 @@ def hijri_date_from_gregorian(gregorian_date):
     return f"{day} {hijri_months[month - 1]} {year}"
 
 def generate_news_image(
-    output_path="assets/OutPut/PaperTemplateLarg.png",
+    output_path="assets/OutPut/PaperCaptionSmall.png",
     Headline="بدون تیتر",
     SubHeadline="بدون زیر تیتر",
     user_image_path="assets/user_image.jpg",
@@ -35,30 +35,24 @@ def generate_news_image(
     event2="",
     event3="",
     days_into_future=0,
-    Headline_font_size=40,
-    SubHeadline_font_size=30,
-    event_font_size=22,
-    weekday_font_size=25,
+    Headline_font_size=35,
+    SubHeadline_font_size=35,
+    event_font_size=12,
+    weekday_font_size=20,
     shamsi_day_font_size=40,
-    hejri_font_size=20,
-    shamsi_month_year_font_size=22,
-    miladi_date_font_size = 17,
-    watermark = True,
+    hejri_font_size=16,
+    shamsi_month_year_font_size=16,
+    miladi_date_font_size=17,
+    watermark = 1,
     watermark_path = "assets/images/watermark.png",
+    ribbon_path = "assets/images/ribbon.png",
     date_positions =  {
-        "weekday": (880, 210),  # Position of the day of the week in Shamsi calendar
-        "shamsi_day": (880, 265),  # Position of the day number in Shamsi calendar
-        "shamsi_month_year": (880, 340),  # Position of the month and year in Shamsi calendar
-        "hejri": (880, 390),  # Position of the Hijri (Islamic) date
-        "miladi": (880, 440),  # Position of the Gregorian date
-    },
-    custom_positions = {
-            0: [],  # Base0 positions
-            1: [(950, 550)],  # Base1 positions
-            2: [(950, 550), (950, 590)],  # Base2 positions
-            3: [(950, 550), (950, 590), (950, 630)]   # Base3 positions
+        "weekday": (240, 13),  # Position of the day of the week in Shamsi calendar
+        "shamsi_day": (240, 60),  # Position of the day number in Shamsi calendar
+        "shamsi_month_year": (240, 110),  # Position of the month and year in Shamsi calendar
+        "miladi": (90, 140),  # Position of the Gregorian date
+        "hejri": (240, 138),  # Position of the Hijri (Islamic) date
     }
-
 ):
     """
     Generate a news image with customized SubHeadline, including Headline, main text, slogan,
@@ -81,6 +75,8 @@ def generate_news_image(
     """
     
 
+    # Select the appropriate base image based on the number of events
+    # The base image is selected based on the number of events (up to 3) to match the design layout.
     event_count = (event1 != "") + (event2 != "") + (event3 != "")
     if event_count == 3:
         todays_events = event1 + "\n" + event2 + "\n" + event3
@@ -89,56 +85,30 @@ def generate_news_image(
     elif event_count == 1 :
         todays_events = event1 
     else:
-        todays_events = "" 
-         
-    # Select the appropriate base image based on the number of events
-    # The base image is selected based on the number of events (up to 3) to match the design layout.
-    event_count = len(todays_events.splitlines()) if todays_events.strip() else 0
-    base_image_path = f"./assets/Base/Base8-{min(event_count, 3)}.png"
-    
-    blank = Image.new("RGBA", (960, 960), "blue")
-    draw = ImageDraw.Draw(blank)
+        todays_events = ""       
 
-    user_image = Image.open(user_image_path).convert("RGBA").resize((833, 635))
+    base_image_path = f"./assets/Base/Base1.png"
+    base_image = Image.open(base_image_path)
+    draw = ImageDraw.Draw(base_image)
 
-    blank.paste(user_image, (0,0), user_image)
-    
-    base_image = Image.open(base_image_path).convert("RGBA")
-    
-    blank.paste(base_image, (0, 0), base_image)
-
-
-    
-
-    # blank.paste(base_image, (0, 0), base_image)  # Use base_image itself as the mask
     # Load user image
-    
-    # user_image = Image.open(user_image_path)
-    # user_image = user_image.resize((680, 460))  # Resize the user image to fit the base image
+    user_image = Image.open(user_image_path)
+    user_image = user_image.resize((909, 542))  # Resize the user image to fit the base image
+
     # Paste user image onto base image
-    # user_image_position = (200, 540)  # Adjust position as needed
-    # base_image.paste(user_image, user_image_position)
-
-    # if (watermark):
-    #     # Load user image
-    #     watermark_image = Image.open('watermark.png')
-    #     print(watermark_image.size)
-    #     # watermark_image = watermark_image.rotate(12)
-    #     # user_image = user_image.resize((680, 460))  # Resize the user image to fit the base image
-
-    #     # Paste user image onto base image
-    #     watermark_image_position = (200, 840)  # Adjust position as needed
-    #     base_image.paste(watermark_image, watermark_image_position)
+    user_image_position = (26, 308)  # Adjust position as needed
+    base_image.paste(user_image, user_image_position)
 
     # Load fonts
-    Headline_font =     ImageFont.truetype("./assets/Font/Ray-ExtraBold.ttf", Headline_font_size)
-    SubHeadline_font = ImageFont.truetype("./assets/Font/Sahel.ttf", SubHeadline_font_size)
+    Headline_font = ImageFont.truetype("./assets/Font/BNazanin.ttf", Headline_font_size)
+    SubHeadline_font = ImageFont.truetype("./assets/Font/Ray-ExtraBlack.ttf", SubHeadline_font_size)
     event_font = ImageFont.truetype("./assets/Font/Sahel-FD.ttf", event_font_size)
-    weekday_font = ImageFont.truetype("./assets/Font/Sahel-Black-FD.ttf", weekday_font_size)
-    shamsi_day_font = ImageFont.truetype("./assets/Font/Sahel-Black-FD.ttf", shamsi_day_font_size)
-    shamsi_month_year_font = ImageFont.truetype("./assets/Font/Sahel-Black-FD.ttf", shamsi_month_year_font_size)
-    miladi_date_font = ImageFont.truetype("./assets/Font/Sahel.ttf", miladi_date_font_size)
+    weekday_font = ImageFont.truetype("./assets/Font/Sahel-FD.ttf", weekday_font_size)
+    shamsi_day_font = ImageFont.truetype("./assets/Font/B Titr Bold_0.ttf", shamsi_day_font_size)
+    miladi_date_font = ImageFont.truetype("./assets/Font/Poppins-Regular.ttf", miladi_date_font_size)
     hejri_font = ImageFont.truetype("./assets/Font/Sahel-FD.ttf", hejri_font_size)
+    shamsi_month_year_font = ImageFont.truetype("./assets/Font/Sahel-FD.ttf", shamsi_month_year_font_size)
+
 
     # Function to reshape and reorder Farsi text
     def prepare_farsi_text(text):
@@ -165,6 +135,7 @@ def generate_news_image(
 
     # Default positions
     
+
     # Draw dates
     # Draw day of the week
     # Draw weekday (center-aligned)
@@ -172,28 +143,28 @@ def generate_news_image(
     weekday_bbox = draw.textbbox((0, 0), weekday_text, font=weekday_font)
     weekday_width = weekday_bbox[2] - weekday_bbox[0]
     weekday_x = date_positions["weekday"][0] - (weekday_width // 2)  # Center-align
-    draw.text((weekday_x, date_positions["weekday"][1]), weekday_text, font=weekday_font, fill="white")
+    draw.text((weekday_x, date_positions["weekday"][1]), weekday_text, font=weekday_font, fill="black")
 
     # Draw Shamsi day (center-aligned)
     shamsi_day_text = prepare_farsi_text(shamsi_day)
     shamsi_day_bbox = draw.textbbox((0, 0), shamsi_day_text, font=shamsi_day_font)
     shamsi_day_width = shamsi_day_bbox[2] - shamsi_day_bbox[0]
     shamsi_day_x = date_positions["shamsi_day"][0] - (shamsi_day_width // 2)  # Center-align
-    draw.text((shamsi_day_x, date_positions["shamsi_day"][1]), shamsi_day_text, font=shamsi_day_font, fill="white")
+    draw.text((shamsi_day_x, date_positions["shamsi_day"][1]), shamsi_day_text, font=shamsi_day_font, fill="black")
 
     # Draw Shamsi month and year (center-aligned)
     shamsi_month_year_text = prepare_farsi_text(shamsi_month_year)
     shamsi_month_year_bbox = draw.textbbox((0, 0), shamsi_month_year_text, font=shamsi_month_year_font)
     shamsi_month_year_width = shamsi_month_year_bbox[2] - shamsi_month_year_bbox[0]
     shamsi_month_year_x = date_positions["shamsi_month_year"][0] - (shamsi_month_year_width // 2)  # Center-align
-    draw.text((shamsi_month_year_x, date_positions["shamsi_month_year"][1]), shamsi_month_year_text, font=shamsi_month_year_font, fill="white")
+    draw.text((shamsi_month_year_x, date_positions["shamsi_month_year"][1]), shamsi_month_year_text, font=shamsi_month_year_font, fill="black")
 
     # Draw Miladi date (center-aligned)
     miladi_text = miladi_date
     miladi_bbox = draw.textbbox((0, 0), miladi_text, font=miladi_date_font)
     miladi_width = miladi_bbox[2] - miladi_bbox[0]
     miladi_x = date_positions["miladi"][0] - (miladi_width // 2)  # Center-align
-    draw.text((miladi_x, date_positions["miladi"][1]), miladi_text, font=miladi_date_font, fill="white")
+    draw.text((miladi_x, date_positions["miladi"][1]), miladi_text, font=miladi_date_font, fill="black")
 
     
     # Draw Hejri date (center-aligned)
@@ -201,52 +172,22 @@ def generate_news_image(
     hejri_bbox = draw.textbbox((0, 0), hejri_text, font=hejri_font)
     hejri_width = hejri_bbox[2] - hejri_bbox[0]
     hejri_x = date_positions["hejri"][0] - (hejri_width // 2)  # Center-align
-    draw.text((hejri_x, date_positions["hejri"][1]), hejri_text, font=hejri_font, fill="white")
+    draw.text((hejri_x, date_positions["hejri"][1]), hejri_text, font=hejri_font, fill="black")
         
     
     
    
     # Draw Headline
-
-    box_width = base_image.size[0] - 250
-    y_offset = 530
-    current_line = ""
-    lines = []
-
-    for word in Headline.split():
-        test_line = f"{current_line} {word}".strip()
-        test_bbox = draw.textbbox((0, 0), test_line, font=Headline_font)
-        test_width = test_bbox[2] - test_bbox[0]
-        if test_width <= box_width:
-            current_line = test_line
-        else:
-            lines.append(current_line)
-            current_line = word
-    if current_line:
-        lines.append(current_line)
-
-    for line in lines:
-        reshaped_line = prepare_farsi_text(line)
-        line_bbox = draw.textbbox((0, 0), reshaped_line, font=Headline_font)
-        line_width = line_bbox[2] - line_bbox[0]
-        line_height = line_bbox[3] - line_bbox[1]
-        x_position = 20 + (box_width - line_width) // 2
-        draw.text((x_position, y_offset), reshaped_line, font=Headline_font, fill="black")
-        y_offset += line_height
-        if y_offset > 960:
-            break
-
-
-    # Headline = prepare_farsi_text(Headline)
-    # Headline_bbox = draw.textbbox((0, 0), Headline, font=Headline_font)
-    # Headline_width = Headline_bbox[2] - Headline_bbox[0]
-    # Headline_position = ((base_image.size[0] - Headline_width) // 2, 230)
-    # draw.text(Headline_position, Headline, font=Headline_font, fill="black")
+    Headline = prepare_farsi_text(Headline)
+    Headline_bbox = draw.textbbox((0, 0), Headline, font=Headline_font)
+    Headline_width = Headline_bbox[2] - Headline_bbox[0]
+    Headline_position = ((base_image.size[0] - Headline_width) // 2, 190)
+    draw.text(Headline_position, Headline, font=Headline_font, fill="black")
     # print(base_image.size)
 
-    # Draw  SubHeadline
-    box_width = base_image.size[0] - 20
-    y_offset = 730
+    # Draw main SubHeadline
+    box_width = 940 - 20
+    y_offset = 230
     current_line = ""
     lines = []
 
@@ -267,10 +208,10 @@ def generate_news_image(
         line_bbox = draw.textbbox((0, 0), reshaped_line, font=SubHeadline_font)
         line_width = line_bbox[2] - line_bbox[0]
         line_height = line_bbox[3] - line_bbox[1]
-        x_position = 10 + (box_width - line_width) // 2
+        x_position = 30 + (box_width - line_width) // 2
         draw.text((x_position, y_offset), reshaped_line, font=SubHeadline_font, fill="black")
         y_offset += line_height
-        if y_offset > 960:
+        if y_offset > 300:
             break
 
     # Draw slogan
@@ -310,6 +251,12 @@ def generate_news_image(
 
     # Draw today's events
     if todays_events.strip():
+        custom_positions = {
+            0: [],  # Base0 positions
+            1: [(150, 60)],  # Base1 positions
+            2: [(150, 50), (150, 80)],  # Base2 positions
+            3: [(150, 40), (150, 70), (150, 100)]   # Base3 positions
+        }
         positions = custom_positions.get(event_count, [(50, 420)])
 
         for i, event in enumerate(todays_events.splitlines()):
@@ -318,42 +265,53 @@ def generate_news_image(
             event_width = line_bbox[2] - line_bbox[0]
             x_position, y_position = positions[i]
             adjusted_x_position = x_position - event_width  # Shift left for RTL alignment
-            draw.text((adjusted_x_position, y_position), reshaped_event, font=event_font, fill="white")
+            draw.text((adjusted_x_position, y_position), reshaped_event, font=event_font, fill="black")
 
     if (watermark):
         watermark_img = Image.open(watermark_path).convert("RGBA")
+        ribbon_img = Image.open(ribbon_path).convert("RGBA")
         (w, h) = watermark_img.size
+        (wr, hr) = ribbon_img.size
         alpha = 0.75
+        alphar = 0.54
         watermark_img = watermark_img.resize((int(alpha * w), int(alpha * h)))
-        watermark_position = (35,830)
-        # base_image = base_image.convert("RGBA")
-        blank.paste(watermark_img, watermark_position, watermark_img)
-        
+        ribbon_img = ribbon_img.resize((int(alphar * wr), int(alphar * hr)))
+        watermark_position = (35,730)
+        ribbon_position = (24,722)
+        base_image = base_image.convert("RGBA")
+        base_image.paste(ribbon_img, ribbon_position, ribbon_img)
+        base_image.paste(watermark_img, watermark_position, watermark_img)
     # Save the resulting image
-    blank.save(output_path)
+    base_image.save(output_path)
 
 # Example usage
 # generate_news_image(
-#     output_path="news_output.png",
-#     Headline="بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای زدهی واهی سپرده سکه از ابتدای زدهی ۴۰ درصدی ی زدهی ۴۰ درصدی گواهی سپردسال",
-#     SubHeadline="نوسان سکه رفاه در حوالی قله و چشم انداز آینده بازار، تحلیلگران رشد بیشتری را پیش بینی می‌کنند.نوسان سکه رفاه در حوالی قله و چشم انداز آینده بازار، تحلیلگران رشد بیشتری را پیش بینی می‌کنند.نوسان سکه رفاه در حوالی قله و چشم انداز آینده بازار، تحلیلگران رشد بیشتری را پیش بینی می‌کنند.",
-#     user_image_path="input_image.jpg",
+#     output_path="assets/OutPut/PaperCaptionSmall.png",
+#     Headline="بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال",
+#     SubHeadline="نوسان سکه رفاه در حوالی قله ، تحلیلگران رشد بیشتری را پیش بینی می‌کنند.",
+#     user_image_path="user_image.jpg",
+#     event1= "رویداد یک",
+#     # event2= "رویداد یک",
+#     # event3= "رویداد یک",
 #     # todays_events="",
 #     # todays_events="رویداد ۱: افزایش نرخ ارز",
 #     # todays_events="رویداد ۱: افزایش نرخ ارز\nرویداد ۲: کاهش ارزش سهام",
-#     todays_events=" افزایش نرخ ارز\n کاهش ارزش سهام\n افزایش نرخ طلا"
-#     # days_into_future=0,
+#     # todays_events=" افزایش نرخ ارز\n کاهش ارزش سهام\n افزایش نرخ طلا",
+#     # days_into_future=2,
 #     # Headline_font_size=40,
 #     # SubHeadline_font_size=50,
 #     # slogan_font_size=25,
+#     # watermark=False
 # )
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", required=True)
-    parser.add_argument("--output", required=True)
-    parser.add_argument("--headline", required=True)
-    parser.add_argument("--subheadline", required=True)
-    parser.add_argument("--daysintofuture", required=True)
+    parser.add_argument("--input", required=False)
+    parser.add_argument("--output", required=False)
+    parser.add_argument("--headline", required=False)
+    parser.add_argument("--subheadline", required=False)
+    parser.add_argument("--daysintofuture", required=False)
     parser.add_argument("--event1", required=False)
     parser.add_argument("--event2", required=False)
     parser.add_argument("--event3", required=False)
@@ -377,4 +335,11 @@ def main():
 
 if __name__ == "__main__":
     main()
- 
+    
+    
+# python generat-images/generate_image2.py --input input_image.jpg --output news_output.png --headline "بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال" --subheadline "نوسان سکه رفاه در حوالی قله و چشم انداز آینده بازار، تحلیلگران رشد بیشتری را پیش بینی می‌کنند." --daysintofuture 0 --event1 "رویداد یک" --event2 "رویداد سه" --event3 "رویداد دو" --watermark 1
+
+
+# "/Users/alihushemian/Desktop/project/3rd attempt/venv/bin/python" "/Users/alihushemian/Desktop/project/3rd attempt/generat-images/generate_image1.py" --input "/Users/alihushemian/Documents/learning web developement/telgram bot/examples/user_image.jpg" --output "/Users/alihushemian/Documents/learning web developement/telgram bot/examples/news_output1.png" --headline "بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال" --subheadline "نوسان سکه رفاه در حوالی قله و چشم انداز آینده بازار، تحلیلگران رشد بیشتری را پیش بینی می‌کنند." --daysintofuture 0 --event1 "رویداد یک" --event2 "رویداد سه" --event3 "رویداد دو" --watermark 1
+
+
