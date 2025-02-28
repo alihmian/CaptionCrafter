@@ -282,8 +282,9 @@ const finish = new Menu<MyContext>("finish")
         const notificationMessage = await ctx.reply("در حال ساخت پست ها ...");
         await ctx.deleteMessage().catch(() => { }); // Remove menu if possible
         if (ctx.session.PaperCaptionLarg) {
-            ctx.session.ImageOutpuPathPaperCaptionLarg = `./assets/OutPut/PaperCaptionLarg-${ctx.chatId}.png`;
-                // "./assets/OutPut/PaperCaptionLarg.png";
+            ctx.session.ImageOutpuPathPaperCaptionLarg = "./assets/OutPut/PaperCaptionLarg.png";
+                // `./assets/OutPut/PaperCaptionLarg-${ctx.chatId}.png`;
+                // 
             ctx.session.DaysIntoFuture = 0;
             const watermark = ctx.session.watermark ? 1 : 0;
             const command = "/venv/bin/python3";
