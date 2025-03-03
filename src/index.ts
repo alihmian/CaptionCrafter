@@ -1105,6 +1105,7 @@ bot.catch((err) => {
 });
 
 console.log("Bot is running...");
+console.log("Updated the code..");
 
 
 
