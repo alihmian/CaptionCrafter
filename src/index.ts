@@ -365,13 +365,13 @@ const finish = new Menu<MyContext>("finish")
 
             // Send that info to your channel
 
-            await bot.api.sendPhoto(
-                -1002302354978,
-                new InputFile(ctx.session.ImageOutpuPathPaperCaptionSmall!),
-                {
-                    caption: ` تصویر  عکس نوشته کوچک \n User :\n${userInfo}`
-                }
-            )
+            // await bot.api.sendDocument(
+            //     -1002302354978,
+            //     new InputFile(ctx.session.ImageOutpuPathPaperCaptionSmall!),
+            //     {
+            //         caption: ` تصویر  عکس نوشته کوچک \n User :\n${userInfo}`
+            //     }
+            // )
             
             // send the image created
             await ctx.replyWithPhoto(
@@ -419,13 +419,13 @@ const finish = new Menu<MyContext>("finish")
                 }
             );
 
-            await bot.api.sendDocument(
-                -1002302354978,
-                new InputFile(ctx.session.ImageOutpuPathPaperTemplateLarg!),
-                {
-                    caption: ` تصویر روزنامه بزرگ \n User :\n${userInfo}`
-                }
-            )
+            // await bot.api.sendDocument(
+            //     -1002302354978,
+            //     new InputFile(ctx.session.ImageOutpuPathPaperTemplateLarg!),
+            //     {
+            //         caption: ` تصویر روزنامه بزرگ \n User :\n${userInfo}`
+            //     }
+            // )
             
             // await bot.api.sendPhoto(
             //     -1002302354978,
@@ -479,13 +479,13 @@ const finish = new Menu<MyContext>("finish")
                     caption: "تصویر روزنامه کوچک"
                 }
             );
-            await bot.api.sendDocument(
-                -1002302354978,
-                new InputFile(ctx.session.ImageOutpuPathPaperTemplateSmall!),
-                {
-                    caption: ` تصویر روزنامه کوچک \n User :\n${userInfo}`
-                }
-            )
+            // await bot.api.sendDocument(
+            //     -1002302354978,
+            //     new InputFile(ctx.session.ImageOutpuPathPaperTemplateSmall!),
+            //     {
+            //         caption: ` تصویر روزنامه کوچک \n User :\n${userInfo}`
+            //     }
+            // )
             
 
        
