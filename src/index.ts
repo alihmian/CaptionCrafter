@@ -325,7 +325,7 @@ const finish = new Menu<MyContext>("finish")
             // )
             
             // send the image created
-            await ctx.replyWithPhoto(
+            await ctx.replyWithDocument(
                 new InputFile(ctx.session.ImageOutpuPathPaperCaptionLarg),
                 {
                     caption: "تصویر عکس نوشته بزرگ"
@@ -374,7 +374,7 @@ const finish = new Menu<MyContext>("finish")
             // )
             
             // send the image created
-            await ctx.replyWithPhoto(
+            await ctx.replyWithDocument(
                 new InputFile(ctx.session.ImageOutpuPathPaperCaptionSmall),
                 {
                     caption: "تصویر عکس نوشته کوچک"
@@ -412,7 +412,7 @@ const finish = new Menu<MyContext>("finish")
 
             // Send that info to your channel
 
-            await ctx.replyWithPhoto(
+            await ctx.replyWithDocument(
                 new InputFile(ctx.session.ImageOutpuPathPaperTemplateLarg),
                 {
                     caption: "تصویر روزنامه بزرگ"
@@ -473,7 +473,7 @@ const finish = new Menu<MyContext>("finish")
             // Send that info to your channel
 
             // send the image created
-            await ctx.replyWithPhoto(
+            await ctx.replyWithDocument(
                 new InputFile(ctx.session.ImageOutpuPathPaperTemplateSmall!),
                 {
                     caption: "تصویر روزنامه کوچک"
