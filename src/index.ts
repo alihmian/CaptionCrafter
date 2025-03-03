@@ -1100,9 +1100,12 @@ bot.catch((err) => {
 });
 
 bot.start();
+bot.catch((err) => {
+    console.error("Error caught:", err);
+});
+
 console.log("Bot is running...");
-console.log("hello world");
-console.log("hello world");
+
 
 
 
