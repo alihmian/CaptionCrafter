@@ -282,7 +282,7 @@ const finish = new Menu<MyContext>("finish")
         const notificationMessage = await ctx.reply("در حال ساخت پست ها ...");
         await ctx.deleteMessage().catch(() => { }); // Remove menu if possible
         if (ctx.session.PaperCaptionLarg) {
-            ctx.session.ImageOutpuPathPaperCaptionLarg = "./assets/OutPut/PaperCaptionLarg"+ctx.chatId+".png";
+            ctx.session.ImageOutpuPathPaperCaptionLarg = "./assets/OutPut/PaperCaptionLarg.png";
                 // `./assets/OutPut/PaperCaptionLarg-${ctx.chatId}.png`;
                 // 
             ctx.session.DaysIntoFuture = 0;
@@ -334,7 +334,7 @@ const finish = new Menu<MyContext>("finish")
         };
 
         if (ctx.session.PaperCaptionSmall) {
-            ctx.session.ImageOutpuPathPaperCaptionSmall = "./assets/OutPut/PaperCaptionSmal"+ctx.chatId+".png";
+            ctx.session.ImageOutpuPathPaperCaptionSmall = "./assets/OutPut/PaperCaptionSmal.png";
             ctx.session.DaysIntoFuture = 0;
             const watermark = ctx.session.watermark ? 1 : 0;
             const command = "/venv/bin/python3";
@@ -382,7 +382,7 @@ const finish = new Menu<MyContext>("finish")
         };
         
         if (ctx.session.PaperTemplateLarg) {
-            ctx.session.ImageOutpuPathPaperTemplateLarg = "./assets/OutPut/PaperTemplateLarg"+ctx.chatId+".png";
+            ctx.session.ImageOutpuPathPaperTemplateLarg = "./assets/OutPut/PaperTemplateLarg.png";
             ctx.session.DaysIntoFuture = 0;
             const watermark = ctx.session.watermark ? 1 : 0;
             const command = "/venv/bin/python3";
@@ -430,7 +430,7 @@ const finish = new Menu<MyContext>("finish")
         };
 
         if (ctx.session.PaperTemplateSmall) {
-            ctx.session.ImageOutpuPathPaperTemplateSmall = "./assets/OutPut/PaperTemplateSmall"+ctx.chatId+".png";
+            ctx.session.ImageOutpuPathPaperTemplateSmall = "./assets/OutPut/PaperTemplateSmall.png";
             ctx.session.DaysIntoFuture = 0;
             const watermark = ctx.session.watermark ? 1 : 0;
             const command = "/venv/bin/python3";
@@ -575,7 +575,7 @@ async function Image(conversation: ImageConversation, ctx: ImageContext) {
     }
     const fileId = largestPhoto.file_id;
 
-    const localFilePath = `./assets/user_image-${ctx.chatId}.jpg`;
+    const localFilePath = `./assets/user_image.jpg`;
     const fileInfo = await ctx.api.getFile(fileId);
     const fileUrl = `https://api.telegram.org/file/bot${bot.token}/${fileInfo.file_path}`;
     const response = await fetch(fileUrl);
