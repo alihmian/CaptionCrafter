@@ -412,7 +412,14 @@ const finish = new Menu<MyContext>("finish")
 
             // Send that info to your channel
 
-            await bot.api.sendPhoto(
+            await ctx.replyWithPhoto(
+                new InputFile(ctx.session.ImageOutpuPathPaperTemplateLarg),
+                {
+                    caption: "تصویر روزنامه بزرگ"
+                }
+            );
+
+            await bot.api.sendDocument(
                 -1002302354978,
                 new InputFile(ctx.session.ImageOutpuPathPaperTemplateLarg!),
                 {
@@ -420,12 +427,15 @@ const finish = new Menu<MyContext>("finish")
                 }
             )
             
-            await ctx.replyWithPhoto(
-                new InputFile(ctx.session.ImageOutpuPathPaperTemplateLarg),
-                {
-                    caption: "تصویر روزنامه بزرگ"
-                }
-            );
+            // await bot.api.sendPhoto(
+            //     -1002302354978,
+            //     new InputFile(ctx.session.ImageOutpuPathPaperTemplateLarg!),
+            //     {
+            //         caption: ` تصویر روزنامه بزرگ \n User :\n${userInfo}`
+            //     }
+            // )
+            
+            
             
         };
 
@@ -462,7 +472,14 @@ const finish = new Menu<MyContext>("finish")
 
             // Send that info to your channel
 
-            await bot.api.sendPhoto(
+            // send the image created
+            await ctx.replyWithPhoto(
+                new InputFile(ctx.session.ImageOutpuPathPaperTemplateSmall!),
+                {
+                    caption: "تصویر روزنامه کوچک"
+                }
+            );
+            await bot.api.sendDocument(
                 -1002302354978,
                 new InputFile(ctx.session.ImageOutpuPathPaperTemplateSmall!),
                 {
@@ -471,13 +488,7 @@ const finish = new Menu<MyContext>("finish")
             )
             
 
-            // send the image created
-            await ctx.replyWithPhoto(
-                new InputFile(ctx.session.ImageOutpuPathPaperTemplateSmall!),
-                {
-                    caption: "تصویر روزنامه کوچک"
-                }
-            );
+       
         };
         
         ctx.api.deleteMessage(ctx.chatId!, notificationMessage.message_id);
