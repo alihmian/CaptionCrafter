@@ -282,7 +282,7 @@ const finish = new Menu<MyContext>("finish")
         const notificationMessage = await ctx.reply("در حال ساخت پست ها ...");
         await ctx.deleteMessage().catch(() => { }); // Remove menu if possible
         if (ctx.session.PaperCaptionLarg) {
-            ctx.session.ImageOutpuPathPaperCaptionLarg = "./assets/OutPut/PaperCaptionLarg.png";
+            ctx.session.ImageOutpuPathPaperCaptionLarg = "./assets/OutPut/PaperCaptionLarg"+ctx.chatId+".png";
                 // `./assets/OutPut/PaperCaptionLarg-${ctx.chatId}.png`;
                 // 
             ctx.session.DaysIntoFuture = 0;
@@ -312,17 +312,17 @@ const finish = new Menu<MyContext>("finish")
                 console.error(`stderr: ${result.stderr}`);
             }
 
-            // const userInfo = JSON.stringify(ctx.from, null, 2);
+            const userInfo = JSON.stringify(ctx.from, null, 2);
 
             // // Send that info to your channel
 
-            // await bot.api.sendPhoto(
-            //     -1002302354978,
-            //     new InputFile(ctx.session.ImageOutpuPathPaperCaptionLarg!),
-            //     {
-            //         caption: ` تصویر  عکس نوشته بزرگ \n User :\n${userInfo}`
-            //     }
-            // )
+            await bot.api.sendDocument(
+                -1002302354978,
+                new InputFile(ctx.session.ImageOutpuPathPaperCaptionLarg!),
+                {
+                    caption: ` تصویر  عکس نوشته بزرگ \n User :\n${userInfo}`
+                }
+            )
             
             // send the image created
             await ctx.replyWithDocument(
@@ -334,7 +334,7 @@ const finish = new Menu<MyContext>("finish")
         };
 
         if (ctx.session.PaperCaptionSmall) {
-            ctx.session.ImageOutpuPathPaperCaptionSmall = "./assets/OutPut/PaperCaptionSmal.png";
+            ctx.session.ImageOutpuPathPaperCaptionSmall = "./assets/OutPut/PaperCaptionSmal"+ctx.chatId+".png";
             ctx.session.DaysIntoFuture = 0;
             const watermark = ctx.session.watermark ? 1 : 0;
             const command = "/venv/bin/python3";
@@ -365,13 +365,13 @@ const finish = new Menu<MyContext>("finish")
 
             // Send that info to your channel
 
-            // await bot.api.sendDocument(
-            //     -1002302354978,
-            //     new InputFile(ctx.session.ImageOutpuPathPaperCaptionSmall!),
-            //     {
-            //         caption: ` تصویر  عکس نوشته کوچک \n User :\n${userInfo}`
-            //     }
-            // )
+            await bot.api.sendDocument(
+                -1002302354978,
+                new InputFile(ctx.session.ImageOutpuPathPaperCaptionSmall!),
+                {
+                    caption: ` تصویر  عکس نوشته کوچک \n User :\n${userInfo}`
+                }
+            )
             
             // send the image created
             await ctx.replyWithDocument(
@@ -382,7 +382,7 @@ const finish = new Menu<MyContext>("finish")
         };
         
         if (ctx.session.PaperTemplateLarg) {
-            ctx.session.ImageOutpuPathPaperTemplateLarg = "./assets/OutPut/PaperTemplateLarg.png";
+            ctx.session.ImageOutpuPathPaperTemplateLarg = "./assets/OutPut/PaperTemplateLarg"+ctx.chatId+".png";
             ctx.session.DaysIntoFuture = 0;
             const watermark = ctx.session.watermark ? 1 : 0;
             const command = "/venv/bin/python3";
@@ -419,28 +419,21 @@ const finish = new Menu<MyContext>("finish")
                 }
             );
 
-            // await bot.api.sendDocument(
-            //     -1002302354978,
-            //     new InputFile(ctx.session.ImageOutpuPathPaperTemplateLarg!),
-            //     {
-            //         caption: ` تصویر روزنامه بزرگ \n User :\n${userInfo}`
-            //     }
-            // )
+            await bot.api.sendDocument(
+                -1002302354978,
+                new InputFile(ctx.session.ImageOutpuPathPaperTemplateLarg!),
+                {
+                    caption: ` تصویر روزنامه بزرگ \n User :\n${userInfo}`
+                }
+            )
             
-            // await bot.api.sendPhoto(
-            //     -1002302354978,
-            //     new InputFile(ctx.session.ImageOutpuPathPaperTemplateLarg!),
-            //     {
-            //         caption: ` تصویر روزنامه بزرگ \n User :\n${userInfo}`
-            //     }
-            // )
-            
+
             
             
         };
 
         if (ctx.session.PaperTemplateSmall) {
-            ctx.session.ImageOutpuPathPaperTemplateSmall = "./assets/OutPut/PaperTemplateSmall.png";
+            ctx.session.ImageOutpuPathPaperTemplateSmall = "./assets/OutPut/PaperTemplateSmall"+ctx.chatId+".png";
             ctx.session.DaysIntoFuture = 0;
             const watermark = ctx.session.watermark ? 1 : 0;
             const command = "/venv/bin/python3";
@@ -479,13 +472,13 @@ const finish = new Menu<MyContext>("finish")
                     caption: "تصویر روزنامه کوچک"
                 }
             );
-            // await bot.api.sendDocument(
-            //     -1002302354978,
-            //     new InputFile(ctx.session.ImageOutpuPathPaperTemplateSmall!),
-            //     {
-            //         caption: ` تصویر روزنامه کوچک \n User :\n${userInfo}`
-            //     }
-            // )
+            await bot.api.sendDocument(
+                -1002302354978,
+                new InputFile(ctx.session.ImageOutpuPathPaperTemplateSmall!),
+                {
+                    caption: ` تصویر روزنامه کوچک \n User :\n${userInfo}`
+                }
+            )
             
 
        
@@ -586,7 +579,7 @@ async function Image(conversation: ImageConversation, ctx: ImageContext) {
     }
     const fileId = largestPhoto.file_id;
 
-    const localFilePath = `./assets/user_image.jpg`;
+    const localFilePath = "./assets/user_image"+ctx.chatId+".jpg";
     const fileInfo = await ctx.api.getFile(fileId);
     const fileUrl = `https://api.telegram.org/file/bot${bot.token}/${fileInfo.file_path}`;
     const response = await fetch(fileUrl);
@@ -956,7 +949,7 @@ bot.use(createConversation(Headline, { plugins: [hydrate()] }));
 bot.use(createConversation(SubHeadline, { plugins: [hydrate()] }));
 // bot.use(form);
 bot.use(create);
-bot.use(approve);
+// bot.use(approve);
 
 
 
@@ -1111,9 +1104,9 @@ bot.catch((err) => {
 });
 
 bot.start();
-bot.catch((err) => {
-    console.error("Error caught:", err);
-});
+// bot.catch((err) => {
+//     console.error("Error caught:", err);
+// });
 
 console.log("Bot is running...");
 console.log("Updated the code..");
