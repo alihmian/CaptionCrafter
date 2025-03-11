@@ -30,7 +30,7 @@ def generate_news_image(
     output_path="assets/OutPut/PaperTemplateLarg.png",
     Headline="بدون تیتر",
     SubHeadline="بدون زیر تیتر",
-    user_image_path="assets/user_image.jpg",
+    user_image_path="user_image.jpg",
     event1="",
     event2="",
     event3="",
@@ -101,7 +101,6 @@ def generate_news_image(
 
     user_image = Image.open(user_image_path).convert("RGBA").resize((833, 635))
 
-    blank.paste(user_image, (0,0), user_image)
     
     base_image = Image.open(base_image_path).convert("RGBA")
     
@@ -409,7 +408,8 @@ def generate_news_image(
             draw.text((adjusted_x_position, y_position), reshaped_event, font=event_font, fill="white")
 
     if (watermark):
-        gray = blank.convert('L')
+        
+        gray = blank.crop([38, 439, 260, 500]).convert('L')
         avg_brightness = ImageStat.Stat(gray).mean[0]
         print(f"Average brightness: {avg_brightness:.2f}")
         
@@ -441,57 +441,58 @@ def generate_news_image(
         blank.paste(colored_wm, watermark_position, mask=colored_wm)  # :contentReference[oaicite:5]{index=5}
         
     # Save the resulting image
+
     blank.save(output_path)
 
 # Example usage
-# generate_news_image(
-#     output_path="assets/OutPut/PaperTemplateSmall.png",
-#     Headline="بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال ",
-#     # Headline= "بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال",
-#     SubHeadline="نوسان سکه رفاه در حوالی قله ، تحلیلگران رشد بیشتری را پیش بینی می‌کنند.",
-#     user_image_path="user_image.jpg",
-#     event1= "رویداد یک",
-#     # event2= "رویداد یک",
-#     # event3= "رویداد یک",
-#     # todays_events="",
-#     # todays_events="رویداد ۱: افزایش نرخ ارز",
-#     # todays_events="رویداد ۱: افزایش نرخ ارز\nرویداد ۲: کاهش ارزش سهام",
-#     # todays_events=" افزایش نرخ ارز\n کاهش ارزش سهام\n افزایش نرخ طلا",
-#     # days_into_future=2,
-#     # Headline_font_size=40,
-#     # SubHeadline_font_size=50,
-#     # slogan_font_size=25,
-#     # watermark=False
-# )
+generate_news_image(
+    output_path="assets/OutPut/PaperTemplateSmall.png",
+    Headline="بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال ",
+    # Headline= "بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال",
+    SubHeadline="نوسان سکه رفاه در حوالی قله ، تحلیلگران رشد بیشتری را پیش بینی می‌کنند.",
+    user_image_path="user_image.jpg",
+    event1= "رویداد یک",
+    # event2= "رویداد یک",
+    # event3= "رویداد یک",
+    # todays_events="",
+    # todays_events="رویداد ۱: افزایش نرخ ارز",
+    # todays_events="رویداد ۱: افزایش نرخ ارز\nرویداد ۲: کاهش ارزش سهام",
+    # todays_events=" افزایش نرخ ارز\n کاهش ارزش سهام\n افزایش نرخ طلا",
+    # days_into_future=2,
+    # Headline_font_size=40,
+    # SubHeadline_font_size=50,
+    # slogan_font_size=25,
+    # watermark=False
+)
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--input", required=False)
-    parser.add_argument("--output", required=False)
-    parser.add_argument("--headline", required=False)
-    parser.add_argument("--subheadline", required=False)
-    parser.add_argument("--daysintofuture", required=False)
-    parser.add_argument("--event1", required=False)
-    parser.add_argument("--event2", required=False)
-    parser.add_argument("--event3", required=False)
-    parser.add_argument("--watermark", required=False)
-    args = parser.parse_args()
+# def main():
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("--input", required=False)
+#     parser.add_argument("--output", required=False)
+#     parser.add_argument("--headline", required=False)
+#     parser.add_argument("--subheadline", required=False)
+#     parser.add_argument("--daysintofuture", required=False)
+#     parser.add_argument("--event1", required=False)
+#     parser.add_argument("--event2", required=False)
+#     parser.add_argument("--event3", required=False)
+#     parser.add_argument("--watermark", required=False)
+#     args = parser.parse_args()
 
 
 
-    generate_news_image(
-        output_path=args.output,
-        Headline=args.headline,
-        SubHeadline=args.subheadline,
-        user_image_path=args.input,
-        days_into_future=int(args.daysintofuture),
-        event1=args.event1,
-        event2=args.event2,
-        event3=args.event3,
-        watermark=int(args.watermark)
-    )
+#     generate_news_image(
+#         output_path=args.output,
+#         Headline=args.headline,
+#         SubHeadline=args.subheadline,
+#         user_image_path=args.input,
+#         days_into_future=int(args.daysintofuture),
+#         event1=args.event1,
+#         event2=args.event2,
+#         event3=args.event3,
+#         watermark=int(args.watermark)
+#     )
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
  

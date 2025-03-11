@@ -216,42 +216,7 @@ def generate_news_image(
         line_height = line_bbox[3] - line_bbox[1]
         line_heights.append(line_height)
         total_height += line_height
-
-    # If text block is taller than the box, adjust to fit within the box
-    # if total_height > box_height:
-    #     # Option 1: Reduce font size until the text fits (maintain a minimum size for readability)
-    #     font_path = "path/to/font.ttf"       # path to the font used for Headline_font
-    #     initial_font_size = 40              # replace with Headline_font's current size if known
-    #     min_font_size = 20                  # minimum font size to preserve readability
-    #     font_size = initial_font_size
-    #     while total_height > box_height and font_size > min_font_size:
-    #         font_size -= 2  # decrement font size
-    #         Headline_font = ImageFont.truetype(font_path, font_size)
-    #         # Re-wrap text with the new (smaller) font
-    #         lines = []
-    #         current_line = ""
-    #         for word in Headline.split():
-    #             test_line = (current_line + " " + word).strip()
-    #             if draw.textbbox((0, 0), test_line, font=Headline_font)[2] <= box_width:
-    #                 current_line = test_line
-    #             else:
-    #                 lines.append(current_line)
-    #                 current_line = word
-    #         if current_line:
-    #             lines.append(current_line)
-    #         # Recalculate total_height with the smaller font
-    #         total_height = 0
-    #         line_heights.clear()
-    #         for line in lines:
-    #             line_height = draw.textbbox((0, 0), prepare_farsi_text(line), font=Headline_font)[3]
-    #             line_height -= draw.textbbox((0, 0), prepare_farsi_text(line), font=Headline_font)[1]
-    #             line_heights.append(line_height)
-    #             total_height += line_height
-
-    #     # Option 2: If text still overflows (or instead of resizing), truncate text to fit
-    #     while total_height > box_height and lines:
-    #         total_height -= line_heights.pop()  # remove last line's height from total
-    #         lines.pop()                         # remove the last line
+                        # remove the last line
 
     # Determine starting y-position for vertical centering
     if total_height < box_height:
@@ -301,42 +266,7 @@ def generate_news_image(
         if y_offset > 3850:
             break
 
-    # Draw slogan
-    # if slogan == "اکنون زمانِ اقتصاد است." :
-    #     slogan = prepare_farsi_text(slogan)
-    #     Headline_position = (300, 100)
-    #     draw.text(Headline_position, slogan, font=slogan_font, fill=(4, 18, 66))
 
-    # else: 
-    #     slogan_box_width = 505 - 270
-    #     slogan_y_offset = 95
-    #     current_slogan_line = ""
-    #     slogan_lines = []
-
-    #     for word in slogan.split():
-    #         test_line = f"{current_slogan_line} {word}".strip()
-    #         test_bbox = draw.textbbox((0, 0), test_line, font=slogan_font)
-    #         test_width = test_bbox[2] - test_bbox[0]
-    #         if test_width <= slogan_box_width:
-    #             current_slogan_line = test_line
-    #         else:
-    #             slogan_lines.append(current_slogan_line)
-    #             current_slogan_line = word
-    #     if current_slogan_line:
-    #         slogan_lines.append(current_slogan_line)
-
-    #     for line in slogan_lines:
-    #         reshaped_line = prepare_farsi_text(line)
-    #         line_bbox = draw.textbbox((0, 0), reshaped_line, font=slogan_font)
-    #         line_width = line_bbox[2] - line_bbox[0]
-    #         line_height = line_bbox[3] - line_bbox[1]
-    #         x_position = 270 + (slogan_box_width - line_width) // 2
-    #         draw.text((x_position, slogan_y_offset), reshaped_line, font=slogan_font, fill=(4, 18, 66))  
-    #         slogan_y_offset += line_height
-    #         if slogan_y_offset > 130:
-    #             break
-
-    # Draw today's events
     if todays_events.strip():
         
         positions = custom_positions.get(event_count, [(50, 420)])
@@ -387,54 +317,54 @@ def generate_news_image(
     blank.save(output_path)
 
 # Example usage
-# generate_news_image(
-#     output_path="assets/OutPut/PaperTemplateLarg.png",
-#     Headline = "بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال",
-#     # Headline = "بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال",
-#     # Headline = "بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال",
-#     SubHeadline="نوسان سکه رفاه در حوالی قله ، تحلیلگران رشد بیشتری را پیش بینی می‌کنند.",
-#     user_image_path="user_image.jpg",
-#     event1= "رویداد یک",
-#     # event2= "رویداد یک",
-#     # event3= "رویداد یک",
-#     # todays_events="",
-#     # todays_events="رویداد ۱: افزایش نرخ ارز",
-#     # todays_events="رویداد ۱: افزایش نرخ ارز\nرویداد ۲: کاهش ارزش سهام",
-#     # todays_events=" افزایش نرخ ارز\n کاهش ارزش سهام\n افزایش نرخ طلا",
-#     # days_into_future=2,
-#     # Headline_font_size=40,
-#     # SubHeadline_font_size=50,
-#     # slogan_font_size=25,
-#     # watermark=False
-# )
+generate_news_image(
+    output_path="assets/OutPut/CaptionedImage.png",
+    Headline = "بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال",
+    # Headline = "بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال",
+    # Headline = "بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال",
+    SubHeadline="نوسان سکه رفاه در حوالی قله ، تحلیلگران رشد بیشتری را پیش بینی می‌کنند.",
+    user_image_path="user_image.jpg",
+    event1= "یک، دو، سه، چهار، پنج، شش، هفت، هشت، نه، ده، یازده، دوازده، سیزده، چهارده، پانزده، شانزده، هفده، هجده، نوزده، بیست، بیست و یک، بیست و دو، بیست و سه، بیست و چهار، بیست و پنج، بیست و شش، بیست و هفت، بیست و هشت، بیست و نه، سی، سی و یک، سی و دو، سی و سه، سی و چهار، سی و پنج، سی و شش، سی و هفت، سی و هشت، سی و نه، چهل، چهل و یک، چهل و دو، چهل و سه، چهل و چهار، چهل و پنج، چهل و شش، چهل و هفت، چهل و هشت، چهل و نه، پنجاه، پنجاه و یک، پنجاه و دو، پنجاه و سه، پنجاه و چهار، پنجاه و پنج، پنجاه و شش، پنجاه و هفت، پنجاه و هشت، پنجاه و نه، شصت، شصت و یک، شصت و دو، شصت و سه، شصت و چهار، شصت و پنج، شصت و شش، شصت و هفت، شصت و هشت، شصت و نه، هفتاد، هفتاد و یک، هفتاد و دو، هفتاد و سه، هفتاد و چهار، هفتاد و پنج، هفتاد و شش، هفتاد و هفت، هفتاد و هشت، هفتاد و نه، هشتاد، هشتاد و یک، هشتاد و دو، هشتاد و سه، هشتاد و چهار، هشتاد و پنج، هشتاد و شش، هشتاد و هفت، هشتاد و هشت، هشتاد و نه، نود، نود و یک، نود و دو، نود و سه، نود و چهار، نود و پنج، نود و شش، نود و هفت، نود و هشت، نود و نه، صد.",
+    event2= "رویداد یک",
+    event3= "رویداد یک",
+    # todays_events="",
+    # todays_events="رویداد ۱: افزایش نرخ ارز",
+    # todays_events="رویداد ۱: افزایش نرخ ارز\nرویداد ۲: کاهش ارزش سهام",
+    # todays_events=" افزایش نرخ ارز\n کاهش ارزش سهام\n افزایش نرخ طلا",
+    # days_into_future=2,
+    # Headline_font_size=40,
+    # SubHeadline_font_size=50,
+    # slogan_font_size=25,
+    # watermark=False
+)
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--input", required=False)
-    parser.add_argument("--output", required=False)
-    parser.add_argument("--headline", required=False)
-    parser.add_argument("--subheadline", required=False)
-    parser.add_argument("--daysintofuture", required=False)
-    parser.add_argument("--event1", required=False)
-    parser.add_argument("--event2", required=False)
-    parser.add_argument("--event3", required=False)
-    parser.add_argument("--watermark", required=False)
-    args = parser.parse_args()
+# def main():
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("--input", required=False)
+#     parser.add_argument("--output", required=False)
+#     parser.add_argument("--headline", required=False)
+#     parser.add_argument("--subheadline", required=False)
+#     parser.add_argument("--daysintofuture", required=False)
+#     parser.add_argument("--event1", required=False)
+#     parser.add_argument("--event2", required=False)
+#     parser.add_argument("--event3", required=False)
+#     parser.add_argument("--watermark", required=False)
+#     args = parser.parse_args()
 
 
 
-    generate_news_image(
-        output_path=args.output,
-        Headline=args.headline,
-        SubHeadline=args.subheadline,
-        user_image_path=args.input,
-        days_into_future=int(args.daysintofuture),
-        event1=args.event1,
-        event2=args.event2,
-        event3=args.event3,
-        watermark=int(args.watermark)
-    )
+#     generate_news_image(
+#         output_path=args.output,
+#         Headline=args.headline,
+#         SubHeadline=args.subheadline,
+#         user_image_path=args.input,
+#         days_into_future=int(args.daysintofuture),
+#         event1=args.event1,
+#         event2=args.event2,
+#         event3=args.event3,
+#         watermark=int(args.watermark)
+#     )
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
     

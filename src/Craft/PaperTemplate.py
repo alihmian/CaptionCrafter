@@ -1,4 +1,4 @@
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont,ImageStat
 from datetime import datetime, timedelta
 from khayyam import JalaliDatetime
 import arabic_reshaper
@@ -35,25 +35,19 @@ def generate_news_image(
     event2="",
     event3="",
     days_into_future=0,
-    Headline_font_size=140,
-    SubHeadline_font_size=140,
+    Headline_font_size=120,
+    SubHeadline_font_size=160,
     slogan_font_size=100,
     event_font_size=55,
     weekday_font_size=85,
-    shamsi_day_font_size=120,
-    hejri_font_size = 80,
-    shamsi_month_year_font_size = 80,
-    miladi_date_font_size = 80,
+    shamsi_day_font_size=150,
+    hejri_font_size = 55,
+    shamsi_month_year_font_size = 60,
+    miladi_date_font_size = 60,
     watermark = 1,
-    watermark_path = "assets/images/watermark.png",
-    ribbon_path = "assets/images/ribbon.png",
-    date_positions =  {
-        "weekday": (1100, 60),  # Position of the day of the week in Shamsi calendar
-        "shamsi_day": (1100, 250),  # Position of the day number in Shamsi calendar
-        "shamsi_month_year": (1100, 390),  # Position of the month and year in Shamsi calendar
-        "miladi": (400, 550),  # Position of the Gregorian date
-        "hejri": (1100, 540),  # Position of the Hijri (Islamic) date
-    }
+    watermark_path = "assets/images/watermark2.png"
+
+
 ):
     """
     Generate a news image with customized content, including Headline, main text, slogan,
@@ -74,8 +68,21 @@ def generate_news_image(
     Returns:
         None: Saves the generated image to the specified output path.
     """
-    
+ 
     event_count = (event1 != "") + (event2 != "") + (event3 != "")
+    y_offset = -20
+    if event_count == 0 :
+        x_offset = 501
+    else:
+        x_offset = 1300
+        
+    date_positions =  {
+        "weekday": (x_offset, 20 + y_offset),  # Position of the day of the week in Shamsi calendar
+        "shamsi_day": (x_offset, 230 + y_offset ),  # Position of the day number in Shamsi calendar
+        "shamsi_month_year": (x_offset, 390 + y_offset ),  # Position of the month and year in Shamsi calendar
+        "miladi": (x_offset, 550 + y_offset ),  # Position of the Gregorian date
+        "hejri": (x_offset, 465 + y_offset ),  # Position of the Hijri (Islamic) date
+    }
     if event_count == 3:
         todays_events = event1 + "\n" + event2 + "\n" + event3
     elif event_count == 2 :
@@ -87,16 +94,16 @@ def generate_news_image(
     # Select the appropriate base image based on the number of events
     # The base image is selected based on the number of events (up to 3) to match the design layout.
     event_count = len(todays_events.splitlines()) if todays_events.strip() else 0
-    base_image_path = f"./assets/Base/Base2-{min(event_count, 3)}.png"
+    base_image_path = f"./assets/Base/PaperTemplate{min(event_count, 3)}.png"
     base_image = Image.open(base_image_path)
     draw = ImageDraw.Draw(base_image)
 
     # Load user image
     user_image = Image.open(user_image_path)
-    user_image = user_image.resize((3715, 2220))  # Resize the user image to fit the base image
+    user_image = user_image.resize((3774, 2412))  # Resize the user image to fit the base image
 
     # Paste user image onto base image
-    user_image_position = (195, 1260)  # Adjust position as needed
+    user_image_position = (153, 1260)  # Adjust position as needed
     base_image.paste(user_image, user_image_position)
 
     # Load fonts
@@ -179,13 +186,13 @@ def generate_news_image(
     Headline = prepare_farsi_text(Headline)
     Headline_bbox = draw.textbbox((0, 0), Headline, font=Headline_font)
     Headline_width = Headline_bbox[2] - Headline_bbox[0]
-    Headline_position = ((base_image.size[0] - Headline_width) // 2, 780)
+    Headline_position = ((base_image.size[0] - Headline_width) // 2, 700)
     draw.text(Headline_position, Headline, font=Headline_font, fill="black")
     # print(base_image.size)
 
     # Draw main content
     box_width = 3980 - 100
-    y_offset = 960
+    y_offset = 830
     current_line = ""
     lines = []
 
@@ -215,7 +222,7 @@ def generate_news_image(
     # Draw slogan
     # if slogan == "اکنون زمانِ اقتصاد است." :
     #     slogan = prepare_farsi_text(slogan)
-    #     Headline_position = (300, 100)
+    #     Headline_position = (x_offset, 100)
     #     draw.text(Headline_position, slogan, font=slogan_font, fill=(4, 18, 66))
 
     # else: 
@@ -249,11 +256,12 @@ def generate_news_image(
 
     # Draw today's events
     if todays_events.strip():
+        x_offset = 900
         custom_positions = {
             0: [],  # Base0 positions
-            1: [(670, 210)],  # Base1 positions
-            2: [(670, 205), (670, 315)],  # Base2 positions
-            3: [(670, 110), (670, 225), (670, 335)]   # Base3 positions
+            1: [(x_offset, 230)],  # Base1 positions
+            2: [(x_offset, 180), (x_offset, 340)],  # Base2 positions
+            3: [(x_offset, 110), (x_offset, 270), (x_offset, 430)]   # Base3 positions
         }
         positions = custom_positions.get(event_count, [(50, 420)])
 
@@ -266,67 +274,79 @@ def generate_news_image(
             draw.text((adjusted_x_position, y_position), reshaped_event, font=event_font, fill="black")
 
     if (watermark):
+        
+        gray = base_image.crop([350, 3100, 1900, 3500]).convert('L')
+        avg_brightness = ImageStat.Stat(gray).mean[0]
+        print(f"Average brightness: {avg_brightness:.2f}")        
+ 
+        # Threshold to decide dark vs bright (128 is mid-point of 0-255)
+        threshold = 128
+        # 3. Decide watermark color: white for dark images, black for bright images
+        if avg_brightness < threshold:
+            watermark_color = (200, 200, 200)  # light color (white)
+            print("Image is dark. Using a light-colored (white) watermark.")
+        else:
+            watermark_color = (70, 70, 70)        # dark color (black)
+            print("Image is bright. Using a dark-colored (black) watermark.")
+
+        
         watermark_img = Image.open(watermark_path).convert("RGBA")
-        ribbon_img = Image.open(ribbon_path).convert("RGBA")
         (w, h) = watermark_img.size
-        (wr, hr) = ribbon_img.size
-        alpha = 2.6
-        alphar = 2
-        watermark_img = watermark_img.resize((int(alpha * w), int(alpha * h) ))
-        ribbon_img = ribbon_img.resize((int(alphar * wr) + 600, int(alphar * hr)))
-        watermark_position = (300,3040)
-        ribbon_position = (190,3000)
+
+        # Split into channels and create a solid-color image for the new watermark
+        r, g, b, alpha = watermark_img.split()
+        colored_wm = Image.new("RGBA", watermark_img.size, watermark_color)
+        colored_wm.putalpha(alpha)  # apply the original watermark's alpha mask&#8203;:contentReference[oaicite:4]{index=4}
+        
+        (w, h) = colored_wm.size
+        alpha = 3
+        colored_wm = colored_wm.resize((int(alpha * w), int(alpha * h) ))
+        colored_wm_position = (300,3040)
         base_image = base_image.convert("RGBA")
-        base_image.paste(ribbon_img, ribbon_position, ribbon_img)
-        base_image.paste(watermark_img, watermark_position, mask=watermark_img)
+        base_image.paste(colored_wm, colored_wm_position, mask=colored_wm)
     # Save the resulting image
+    base_image = base_image.convert("RGB")
     base_image.save(output_path)
 
 # Example usage
-# generate_news_image(
-#     output_path="assets/OutPut/PaperCaptionLarg.png",
-#     Headline="بازدهی ۴۰ درصدی گواهی سپرده سکه از ابتدای سال",
-#     SubHeadline="نوسان سکه رفاه در حوالی قله ، تحلیلگرانران رشد بیشتری را پیش بینی می‌کنند.",
-#     user_image_path="user_image.jpg",
-#     # todays_events="",
-#     # todays_events="رویداد ۱: افزایش نرخ ارز",
-#     # todays_events="رویداد ۱: افزایش نرخ ارز\nرویداد ۲: کاهش ارزش سهام",
-#     # todays_events=" افزایش نرخ ارز\n کاهش ارزش سهام\n افزایش نرخ طلا",
-#     # days_into_future=0,
-#     # Headline_font_size=40,
-#     # SubHeadline_font_size=50,
-#     # slogan_font_size=25,
-#     # watermark = True
-# )
+generate_news_image(
+    output_path="assets/OutPut/PaperCaptionLarg.png",
+    Headline="یک، دو، سه، چهار، پنج، شش، هفت، هشت، نه، ده، یازده، دوازده، سیزده، چهارده، پانزده، شانزده، هفده، هجده، نوزده، بیست، بیست و یک، بیست و دو، بیست و سه، بیست و چهار، بیست و پنج، بیست و شش، بیست و هفت، بیست و هشت، بیست و نه، سی، سی و یک، سی و دو، سی و سه، سی و چهار، سی و پنج، سی و شش، سی و هفت، سی و هشت، سی و نه، چهل، چهل و یک، چهل و دو، چهل و سه، چهل و چهار، چهل و پنج، چهل و شش، چهل و هفت، چهل و هشت، چهل و نه، پنجاه، پنجاه و یک، پنجاه و دو، پنجاه و سه، پنجاه و چهار، پنجاه و پنج، پنجاه و شش، پنجاه و هفت، پنجاه و هشت، پنجاه و نه، شصت، شصت و یک، شصت و دو، شصت و سه، شصت و چهار، شصت و پنج، شصت و شش، شصت و هفت، شصت و هشت، شصت و نه، هفتاد، هفتاد و یک، هفتاد و دو، هفتاد و سه، هفتاد و چهار، هفتاد و پنج، هفتاد و شش، هفتاد و هفت، هفتاد و هشت، هفتاد و نه، هشتاد، هشتاد و یک، هشتاد و دو، هشتاد و سه، هشتاد و چهار، هشتاد و پنج، هشتاد و شش، هشتاد و هفت، هشتاد و هشت، هشتاد و نه، نود، نود و یک، نود و دو، نود و سه، نود و چهار، نود و پنج، نود و شش، نود و هفت، نود و هشت، نود و نه، صد.",
+    SubHeadline="یک، دو، سه، چهار، پنج، شش، هفت، هشت، نه، ده، یازده، دوازده، سیزده، چهارده، پانزده، شانزده، هفده، هجده، نوزده، بیست، بیست و یک، بیست و دو، بیست و سه، بیست و چهار، بیست و پنج، بیست و شش، بیست و هفت، بیست و هشت، بیست و نه، سی، سی و یک، سی و دو، سی و سه، سی و چهار، سی و پنج، سی و شش، سی و هفت، سی و هشت، سی و نه، چهل، چهل و یک، چهل و دو، چهل و سه، چهل و چهار، چهل و پنج، چهل و شش، چهل و هفت، چهل و هشت، چهل و نه، پنجاه، پنجاه و یک، پنجاه و دو، پنجاه و سه، پنجاه و چهار، پنجاه و پنج، پنجاه و شش، پنجاه و هفت، پنجاه و هشت، پنجاه و نه، شصت، شصت و یک، شصت و دو، شصت و سه، شصت و چهار، شصت و پنج، شصت و شش، شصت و هفت، شصت و هشت، شصت و نه، هفتاد، هفتاد و یک، هفتاد و دو، هفتاد و سه، هفتاد و چهار، هفتاد و پنج، هفتاد و شش، هفتاد و هفت، هفتاد و هشت، هفتاد و نه، هشتاد، هشتاد و یک، هشتاد و دو، هشتاد و سه، هشتاد و چهار، هشتاد و پنج، هشتاد و شش، هشتاد و هفت، هشتاد و هشت، هشتاد و نه، نود، نود و یک، نود و دو، نود و سه، نود و چهار، نود و پنج، نود و شش، نود و هفت، نود و هشت، نود و نه، صد.",
+    user_image_path="user_image.jpg",
+    event1="یک دو سه چهار پنج شیش هفت هشت    ",
+    # event2="یک دو سه چهار پنج شیش هفت هشت    ",
+    # event3="یک دو سه چهار پنج شیش هفت هشت    "
+)
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--input", required=False)
-    parser.add_argument("--output", required=False)
-    parser.add_argument("--headline", required=False)
-    parser.add_argument("--subheadline", required=False)
-    parser.add_argument("--daysintofuture", required=False)
-    parser.add_argument("--event1", required=False)
-    parser.add_argument("--event2", required=False)
-    parser.add_argument("--event3", required=False)
-    parser.add_argument("--watermark", required=False)
-    args = parser.parse_args()
+# def main():
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("--input", required=False)
+#     parser.add_argument("--output", required=False)
+#     parser.add_argument("--headline", required=False)
+#     parser.add_argument("--subheadline", required=False)
+#     parser.add_argument("--daysintofuture", required=False)
+#     parser.add_argument("--event1", required=False)
+#     parser.add_argument("--event2", required=False)
+#     parser.add_argument("--event3", required=False)
+#     parser.add_argument("--watermark", required=False)
+#     args = parser.parse_args()
 
 
 
-    generate_news_image(
-        output_path=args.output,
-        Headline=args.headline,
-        SubHeadline=args.subheadline,
-        user_image_path=args.input,
-        days_into_future=int(args.daysintofuture),
-        event1=args.event1,
-        event2=args.event2,
-        event3=args.event3,
-        watermark=int(args.watermark)
-    )
+#     generate_news_image(
+#         output_path=args.output,
+#         Headline=args.headline,
+#         SubHeadline=args.subheadline,
+#         user_image_path=args.input,
+#         days_into_future=int(args.daysintofuture),
+#         event1=args.event1,
+#         event2=args.event2,
+#         event3=args.event3,
+#         watermark=int(args.watermark)
+#     )
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
  
