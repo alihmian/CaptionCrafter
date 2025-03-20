@@ -272,3 +272,57 @@ git config --global alias.st status
 git config --global alias.lg "log --oneline --graph --decorate --all"
 ```
 
+
+
+
+## 🌳 Git  (Push, Pull, Merge, Rebase)
+
+### ❗ Git Push Fails with Non-Fast-Forward
+> `error: failed to push some refs (non-fast-forward)`
+
+This means your local branch is **behind** the remote.
+
+### 🛠️ Fix It: Choose a Pull Strategy
+
+#### 1. **Merge (default & safe)**
+```bash
+git pull --no-rebase
+git push
+```
+
+#### 2. **Rebase (cleaner history)**
+```bash
+git pull --rebase
+git push
+```
+
+#### 3. **Fast-forward only (strict)**
+```bash
+git pull --ff-only
+```
+- Only works if your branch hasn’t diverged
+
+---
+
+### 🔁 Set Pull Behavior Permanently
+
+#### Merge by default:
+```bash
+git config pull.rebase false
+```
+
+#### Rebase by default:
+```bash
+git config pull.rebase true
+```
+
+#### Fast-forward only:
+```bash
+git config pull.ff only
+```
+
+Add `--global` to apply to all repos:
+```bash
+git config --global pull.rebase false
+```
+
