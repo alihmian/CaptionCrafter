@@ -23,3 +23,6 @@ __pycache__/
 
 # Environment variables
 .env
+
+# Well the size limit
+Design/
