@@ -26,3 +26,6 @@ __pycache__/
 
 # Well the size limit
 Design/
+
+# Hope nothing brakes
+node_modules/
