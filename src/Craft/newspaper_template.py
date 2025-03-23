@@ -4,7 +4,7 @@ from text_utils import draw_text_no_box, draw_text_in_box
 from convertdate import persian, islamic
 from typing import Optional
 
-def create_breaking_news_image(
+def create_newspaper_image(
     user_image_path: str,
     overline_text: str,
     main_headline_text: str,
