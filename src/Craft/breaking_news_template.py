@@ -1,11 +1,10 @@
-# breaking_news_template.py
-
 from PIL import Image, ImageDraw
 from datetime import datetime
 from convertdate import persian
 from text_utils import draw_text_in_box, draw_text_no_box
 from date_util import shamsi, clock_time
 from typing import Optional
+import argparse
 
 DEFAULT_IS_RTL: bool = False
 
@@ -16,55 +15,58 @@ def create_breaking_news_image(
     output_path: str,
     font_size_delta: int = 0,
     dynamic_font_size: bool = True,
+    composed: bool = False,  # New boolean parameter.
     **kwargs,
 ) -> None:
     """
     Generates a breaking news image with headline, Persian date, and time.
 
+    If 'composed' is True, then the provided user_image_path is assumed to be a pre-composed
+    image that already includes the user image and overlay, so the function only adds text.
+    Otherwise, it loads the base template, composites the user image and overlay, and then adds text.
+
     Args:
-        user_image_path (str): Path to the user image to embed.
+        user_image_path (str): Path to the user image to embed or to a pre-composed base image.
         headline_text (str): The main headline text.
         output_path (str): Where to save the final image.
         font_size_delta (int): General font size delta (optional).
         dynamic_font_size (bool): If True, auto-adjusts font size to fit.
-        headline_font_size_delta (int): Font size tweak specifically for headline.
+        composed (bool): If True, assumes the base image is already composed (user image & overlay applied).
         **kwargs: Additional arguments passed to text utility functions.
     """
+    if composed:
+        # Use the pre-composed image directly.
+        base_img = Image.open(user_image_path).convert("RGBA")
+        draw = ImageDraw.Draw(base_img)
+    else:
+        # Load base template and compose with the user image and overlay.
+        base_img = Image.open(
+            "./assets/templates/Breaking News/breaking_news_base.png"
+        ).convert("RGBA")
+        draw = ImageDraw.Draw(base_img)
 
-    # Load base template
-    base_img = Image.open(
-        "./assets/templates/Breaking News/breaking_news_base.png"
-    ).convert("RGBA")
+        # Load and paste the user image.
+        user_img = Image.open(user_image_path).convert("RGBA")
+        # Define the target region (left, top, right, bottom)
+        region = (1890, 0, 4000, 2520)  # Example values
+        region_width = region[2] - region[0]
+        region_height = region[3] - region[1]
+        resized_user_img = user_img.resize((region_width, region_height))
+        base_img.paste(resized_user_img, region, resized_user_img)
 
-    # base_img = Image.alpha_composite(base_img, overlay_img)
-    draw = ImageDraw.Draw(base_img)
+        # Apply overlay.
+        overlay_img = Image.open(
+            "./assets/templates/Breaking News/breaking_news_overlay.png"
+        ).convert("RGBA")
+        base_img.paste(overlay_img, (0, 0), overlay_img)
 
-    # Load and paste user image
-    user_img = Image.open(user_image_path).convert("RGBA")
-
-    # Define the target region (left, top, right, bottom)
-    region = (1890, 0, 4000, 2520)  # Example values
-
-    # Resize user_img to match the region size
-    region_width = region[2] - region[0]
-    region_height = region[3] - region[1]
-    resized_user_img = user_img.resize((region_width, region_height))
-
-    # Paste resized image into the region on base_img
-    base_img.paste(resized_user_img, region, resized_user_img)
-
-    overlay_img = Image.open(
-        "./assets/templates/Breaking News/breaking_news_overlay.png"
-    ).convert("RGBA")
-    base_img.paste(overlay_img, (0, 0), overlay_img)
-
-    # Fonts
+    # Fonts.
     fonts = {
         "headline": "./assets/Font/Anjoman-Black.ttf",
         "datetime": "./assets/Font/Sahel-Black-FD.ttf",
     }
 
-    # Draw Headline Text
+    # Draw Headline Text.
     headline_box = (1080, 2550, 2820, 444)  # (left, top, width, height)
     base_font_size = 140 + font_size_delta
 
@@ -83,7 +85,7 @@ def create_breaking_news_image(
         **kwargs,
     )
 
-    # Draw Persian date (month + day)
+    # Draw Persian date (month + day).
     persian_date_str = shamsi(year=False, month=True, day=True)
 
     draw_text_no_box(
@@ -98,7 +100,7 @@ def create_breaking_news_image(
         is_rtl=DEFAULT_IS_RTL,
     )
 
-    # Draw Time
+    # Draw Time.
     time_str = clock_time()
     draw_text_no_box(
         draw=draw,
@@ -112,14 +114,55 @@ def create_breaking_news_image(
         is_rtl=DEFAULT_IS_RTL,
     )
 
-    # Save final output
+    # Save final output.
     base_img.convert("RGB").save(output_path, format="JPEG", quality=95)
 
 
-create_breaking_news_image(
-    "assets/user_image.jpg",
-    "خبر خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی فوری",
-    # "یک، دو، سه، چهار، پنج، شش، هفت، هشت، نه، ده، یازده، دوازده، سیزده، چهارده، پانزده، شانزده، هفده، هجده، نوزده، بیست، بیست و یک، بیست و دو، بیست و سه، بیست و چهار، بیست و پنج، بیست و شش، بیست و هفت، بیست و هشت، بیست و نه، سی، سی و یک، سی و دو، سی و سه، سی و چهار، سی و پنج، سی و شش، سی و هفت، سی و هشت، سی و نه، چهل، چهل و یک، چهل و دو، چهل و سه، چهل و چهار، چهل و پنج، چهل و شش، چهل و هفت، چهل و هشت، چهل و نه، پنجاه، پنجاه و یک، پنجاه و دو، پنجاه و سه، پنجاه و چهار، پنجاه و پنج، پنجاه و شش، پنجاه و هفت، پنجاه و هشت، پنجاه و نه، شصت، شصت و یک، شصت و دو، شصت و سه، شصت و چهار، شصت و پنج، شصت و شش، شصت و هفت، شصت و هشت، شصت و نه، هفتاد، هفتاد و یک، هفتاد و دو، هفتاد و سه، هفتاد و چهار، هفتاد و پنج، هفتاد و شش، هفتاد و هفت، هفتاد و هشت، هفتاد و نه، هشتاد، هشتاد و یک، هشتاد و دو، هشتاد و سه، هشتاد و چهار، هشتاد و پنج، هشتاد و شش، هشتاد و هفت، هشتاد و هشت، هشتاد و نه، نود، نود و یک، نود و دو، نود و سه، نود و چهار، نود و پنج، نود و شش، نود و هفت، نود و هشت، نود و نه، صد.",
-    "assets/OutPut/breaking_news_output.png",
-    dynamic_font_size=True,
-)
+# if __name__ == "__main__":
+#     create_breaking_news_image(
+#         user_image_path="assets/user_image.jpg",
+#         headline_text="خبر خیلی خیلی خیلی خیلی خیلی فوری",
+#         output_path="assets/OutPut/breaking_news_output.png",
+#         dynamic_font_size=True,
+#         composed=False,  # Set to True if passing a pre-composed image.
+#     )
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Generate a breaking news image with headline, Persian date, and time."
+    )
+    parser.add_argument(
+        "--user_image_path",
+        type=str,
+        required=True,
+        help="Path to the user image or pre-composed base image.",
+    )
+    parser.add_argument(
+        "--headline_text", type=str, required=True, help="The main headline text."
+    )
+    parser.add_argument(
+        "--output_path", type=str, required=True, help="Path to save the final image."
+    )
+    parser.add_argument(
+        "--font_size_delta", type=int, default=0, help="Font size delta adjustment."
+    )
+    parser.add_argument(
+        "--dynamic_font_size", action="store_true", help="Enable dynamic font sizing."
+    )
+    parser.add_argument(
+        "--composed",
+        action="store_true",
+        help="Indicate if the image is pre-composed (skips base composition).",
+    )
+    args = parser.parse_args()
+
+    create_breaking_news_image(
+        user_image_path=args.user_image_path,
+        headline_text=args.headline_text,
+        output_path=args.output_path,
+        font_size_delta=args.font_size_delta,
+        dynamic_font_size=args.dynamic_font_size,
+        composed=args.composed,
+    )
+
+    # python "./src/Craft/breaking_news_template.py" --user_image_path="./assets/user_image.jpg" --headline_text="Breaking News Headline" --output_path="./assets/OutPut/breaking_news_output.png" --dynamic_font_size --composed
