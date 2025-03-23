@@ -4,7 +4,10 @@ from PIL import Image, ImageDraw
 from datetime import datetime
 from convertdate import persian
 from text_utils import draw_text_in_box, draw_text_no_box
+from date_util import shamsi, clock_time
 from typing import Optional
+
+DEFAULT_IS_RTL: bool = False
 
 
 def create_breaking_news_image(
@@ -57,8 +60,8 @@ def create_breaking_news_image(
 
     # Fonts
     fonts = {
-        "headline": "./assets/Font/Anjoman-SuperHeavy.ttf",
-        "datetime": "./assets/Font/Sahel.ttf",
+        "headline": "./assets/Font/Anjoman-Black.ttf",
+        "datetime": "./assets/Font/Sahel-Black-FD.ttf",
     }
 
     # Draw Headline Text
@@ -75,42 +78,39 @@ def create_breaking_news_image(
         auto_size=dynamic_font_size,
         font_size=base_font_size,
         color="black",
-        line_spacing = 1.5,
-        is_rtl=True,
+        line_spacing=1.5,
+        is_rtl=DEFAULT_IS_RTL,
         **kwargs,
     )
 
-    # # Get Persian date and current time
-    # now = datetime.now()
-    # p_year, p_month, p_day = persian.from_gregorian(now.year, now.month, now.day)
-    # time_str = now.strftime("%H:%M")
-    # persian_date_str = f"{p_day} {persian.MONTHS[p_month]}"
+    # Draw Persian date (month + day)
+    persian_date_str = shamsi(year=False, month=True, day=True)
 
-    # # Draw Persian date (month + day)
-    # draw_text_no_box(
-    #     draw=draw,
-    #     text=persian_date_str,
-    #     font_path=fonts["datetime"],
-    #     x=700,
-    #     y=420,
-    #     alignment="right",
-    #     font_size=24 + font_size_delta,
-    #     color="white",
-    #     is_rtl=True,
-    # )
+    draw_text_no_box(
+        draw=draw,
+        text=persian_date_str,
+        font_path=fonts["datetime"],
+        x=450,
+        y=3600,
+        alignment="left",
+        font_size=100,
+        color=(109, 105, 115),
+        is_rtl=DEFAULT_IS_RTL,
+    )
 
-    # # Draw Time
-    # draw_text_no_box(
-    #     draw=draw,
-    #     text=time_str,
-    #     font_path=fonts["datetime"],
-    #     x=700,
-    #     y=450,
-    #     alignment="right",
-    #     font_size=24 + font_size_delta,
-    #     color="white",
-    #     is_rtl=False,  # Time is LTR
-    # )
+    # Draw Time
+    time_str = clock_time()
+    draw_text_no_box(
+        draw=draw,
+        text=time_str,
+        font_path=fonts["datetime"],
+        x=450,
+        y=3750,
+        alignment="left",
+        font_size=100,
+        color=(109, 105, 115),
+        is_rtl=DEFAULT_IS_RTL,
+    )
 
     # Save final output
     base_img.convert("RGB").save(output_path, format="JPEG", quality=95)
@@ -118,7 +118,7 @@ def create_breaking_news_image(
 
 create_breaking_news_image(
     "assets/user_image.jpg",
-    "خبری خیلی خیلی فوری",
+    "خبر خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی خیلی فوری",
     # "یک، دو، سه، چهار، پنج، شش، هفت، هشت، نه، ده، یازده، دوازده، سیزده، چهارده، پانزده، شانزده، هفده، هجده، نوزده، بیست، بیست و یک، بیست و دو، بیست و سه، بیست و چهار، بیست و پنج، بیست و شش، بیست و هفت، بیست و هشت، بیست و نه، سی، سی و یک، سی و دو، سی و سه، سی و چهار، سی و پنج، سی و شش، سی و هفت، سی و هشت، سی و نه، چهل، چهل و یک، چهل و دو، چهل و سه، چهل و چهار، چهل و پنج، چهل و شش، چهل و هفت، چهل و هشت، چهل و نه، پنجاه، پنجاه و یک، پنجاه و دو، پنجاه و سه، پنجاه و چهار، پنجاه و پنج، پنجاه و شش، پنجاه و هفت، پنجاه و هشت، پنجاه و نه، شصت، شصت و یک، شصت و دو، شصت و سه، شصت و چهار، شصت و پنج، شصت و شش، شصت و هفت، شصت و هشت، شصت و نه، هفتاد، هفتاد و یک، هفتاد و دو، هفتاد و سه، هفتاد و چهار، هفتاد و پنج، هفتاد و شش، هفتاد و هفت، هفتاد و هشت، هفتاد و نه، هشتاد، هشتاد و یک، هشتاد و دو، هشتاد و سه، هشتاد و چهار، هشتاد و پنج، هشتاد و شش، هشتاد و هفت، هشتاد و هشت، هشتاد و نه، نود، نود و یک، نود و دو، نود و سه، نود و چهار، نود و پنج، نود و شش، نود و هفت، نود و هشت، نود و نه، صد.",
     "assets/OutPut/breaking_news_output.png",
     dynamic_font_size=True,

@@ -269,7 +269,7 @@ def draw_text_in_box(
 
         # Update y-coordinate for next line
         current_y += line_height * line_spacing
-        if current_y - (line_height * line_spacing) > box_bottom:
+        if current_y  > box_bottom:
             break
 
 
