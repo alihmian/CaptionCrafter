@@ -728,7 +728,7 @@ bot.use(formMenu);
 // ----------------------
 bot.command("start", async (ctx) => {
     const userId = ctx.from?.id;
-    const userSpecificPath = `./assets/generated_newspaper_image_${userId}.png`;
+    const userSpecificPath = `./assets/OutPut/generated_newspaper_image_${userId}.png`;
 
     // 2. Store the path and send the initial menu
     ctx.session.outputPath = userSpecificPath;
@@ -741,6 +741,12 @@ bot.command("start", async (ctx) => {
     // Save this mainMessageId in your session so you can edit it later
     ctx.session.mainMessageId = sentMessage.message_id;
 });
+
+
+bot.api.setMyCommands([
+    { command: "start", description: "رباتو روشن کن!" },
+]);
+
 
 bot.catch((err) => {
     console.error("Error in grammY:", err);
