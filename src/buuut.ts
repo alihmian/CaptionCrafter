@@ -11,13 +11,19 @@ import * as fs from "fs";
 import { spawnSync } from "child_process";
 import { GrammyError } from "grammy"; // For error checking
 
+const log = (...args: any[]) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}]`, ...args);
+};
+
+
 // ----------------------
 // Define Session Data
 // ----------------------
 interface SessionData {
     mainMessageId?: number;
-    Image1?: string;
-    Image1Path?: string;
+    Image?: string;
+    ImagePath?: string;
     Overline?: string;              // was Text1
     MainHeadline?: string;          // was Text2
     Event1?: string;                // was Text3
@@ -74,7 +80,7 @@ bot.use(hydrate());
 
 // Data shape for building the form menu
 interface FormData {
-    Image1?: string;
+    Image?: string;
     Overline?: string;
     MainHeadline?: string;
     Event1?: string;
@@ -91,7 +97,7 @@ interface FormData {
 // Returns current form data from the session with defaults for toggles and integers
 function collectFormData(ctx: MyContext): FormData {
     return {
-        Image1: ctx.session.Image1,
+        Image: ctx.session.Image,
         Overline: ctx.session.Overline,
         MainHeadline: ctx.session.MainHeadline,
         Event1: ctx.session.Event1,
@@ -109,15 +115,18 @@ function collectFormData(ctx: MyContext): FormData {
 // Utility: call the Python script via spawnSync, passing all relevant arguments as CLI args.
 async function updateNewspaperImage(ctx: MyContext) {
 
+    const userId = ctx.from?.id;
+    const username = ctx.from?.username;
+    log(`Generating image for user ${username} (${userId})`);
 
     // Safely check if mainMessageId is set
     const mainMessageId = ctx.session.mainMessageId;
     if (!mainMessageId) {
-        console.error("No mainMessageId stored in session yet!");
+        log("No mainMessageId stored in session yet!");
         return;
     }
     // Gather needed info from the session
-    const userImagePath = ctx.session.Image1Path || "./assets/images/ZAMAN_EGTESAD_LOGO.png";
+    const userImagePath = ctx.session.ImagePath || "./assets/images/ZAMAN_EGTESAD_LOGO.png";
     const overlineText = ctx.session.Overline || " ";
     const mainHeadlineText = ctx.session.MainHeadline || " ";
     const event1 = ctx.session.Event1 || "";
@@ -133,7 +142,7 @@ async function updateNewspaperImage(ctx: MyContext) {
     const composed = ctx.session.composed ?? false;
 
     // We'll produce the final image here.
-    const outputPath = "./assets/generated_newspaper_image.png"; // for each person different?
+    const outputPath = ctx.session.outputPath || `./assets/OutPut/generated_newspaper_image_${userId}.png`;
 
     // Build the argument list for the Python script. It uses argparse in the __main__ block.
     // The CLI usage is:
@@ -171,32 +180,42 @@ async function updateNewspaperImage(ctx: MyContext) {
         args.push("--composed");
     }
 
+    log("Calling Python script with args:", args);
+
     // spawnSync to run python3 script
     const result = spawnSync("python3", args, { stdio: "inherit" });
     if (result.error) {
-        console.error("Error calling Python script:", result.error);
+        log("Error calling Python script:", result.error);
+    } else {
+        log("Python script executed successfully");
     }
 
-
-    // // Now update the image in the same message if possible
-    // try {
-    //     await ctx.editMessageMedia({
-    //         type: "photo",
-    //         media: new InputFile(outputPath),
-    //         caption: "Live updated newspaper",
-    //     });
-    // } catch (error) {
-    //     console.error("Failed to update newspaper image:", error);
-    // }
     try {
         await ctx.api.editMessageMedia(ctx.chat!.id, mainMessageId, {
             type: "photo",
             media: new InputFile(outputPath),
             caption: "Live updated newspaper",
         });
+        log("Updated message media successfully.");
     } catch (error) {
         console.error("Failed to update newspaper image:", error);
     }
+
+    // Now send ONE message in the channel with the final image + some info
+    try {
+        await ctx.api.sendPhoto(
+            -1002302354978, // Your channel ID
+            new InputFile(outputPath),
+            {
+                caption:
+                    `Newspaper created by @${username} \n(ID: ${userId})\n`
+            }
+        );
+    } catch (error) {
+        console.error("Failed to send output image to channel:", error);
+    }
+
+
 }
 
 // Builds the inline menu for the form.
@@ -207,8 +226,8 @@ function buildFormMenu(
     return conversation.menu("form")
         // Image input row
         .text(
-            data.Image1 ? "Image1 ✅" : "Image1 ❌",
-            (ctx) => ctx.conversation.enter("image1Conversation")
+            data.Image ? "Image ✅" : "Image ❌",
+            (ctx) => ctx.conversation.enter("imageConversation")
         )
         // Overline row (was Text1)
         .row()
@@ -372,6 +391,7 @@ async function handleFieldInput<T extends MyContext>(
     }
 
     // Store the result in the session
+    log(`Received input for field ${options.fieldName} from user ${ctx.from?.id}`);
     await conversation.external((ctx: T) => {
         ctx.session[options.fieldName] = input;
     });
@@ -393,19 +413,21 @@ async function handleFieldInput<T extends MyContext>(
     });
 
     await ctx.editMessageReplyMarkup({ reply_markup: updatedMenu });
+    log(`Field ${options.fieldName} processed and image updated.`);
+
 }
 
 // ----------------------
 // Conversation Handlers
 // ----------------------
 
-// Image1 conversation
-async function image1Conversation(
+// Image conversation
+async function imageConversation(
     conversation: FieldConversation,
     ctx: MyContext
 ) {
     await handleFieldInput(conversation, ctx, {
-        fieldName: "Image1",
+        fieldName: "Image",
         promptMessage: "Please send Image 1",
         waitType: "photo",
         processInput: async (ctx, photoMsg) => {
@@ -416,7 +438,7 @@ async function image1Conversation(
                 return null;
             }
             const fileId = largestPhoto.file_id;
-            const localPath = "./assets/image1_" + ctx.chatId + ".jpg";
+            const localPath = "./assets/image_" + ctx.chatId + ".jpg";
             const fileInfo = await ctx.api.getFile(fileId);
             const fileUrl = `https://api.telegram.org/file/bot${bot.token}/${fileInfo.file_path}`;
             const response = await fetch(fileUrl);
@@ -426,7 +448,7 @@ async function image1Conversation(
             }
             fs.writeFileSync(localPath, Buffer.from(await response.arrayBuffer()));
             await conversation.external((ctx: MyContext) => {
-                ctx.session.Image1Path = localPath;
+                ctx.session.ImagePath = localPath;
             });
             return fileId;
         },
@@ -438,6 +460,8 @@ async function image1Conversation(
             });
         },
     }, buildFormMenu);
+
+
 }
 
 // Overline conversation (was text1)
@@ -506,8 +530,8 @@ async function clearFormConversation(
     ctx: FieldContext
 ) {
     await conversation.external((ctx: MyContext) => {
-        ctx.session.Image1 = undefined;
-        ctx.session.Image1Path = undefined;
+        ctx.session.Image = undefined;
+        ctx.session.ImagePath = undefined;
         ctx.session.Overline = undefined;
         ctx.session.MainHeadline = undefined;
         ctx.session.Event1 = undefined;
@@ -531,6 +555,8 @@ async function clearFormConversation(
         caption: "Default image",
     });
     await ctx.editMessageReplyMarkup({ reply_markup: clearedMenu });
+    log(`User ${ctx.from?.id} cleared the form.`);
+
 }
 
 // Finish conversation: shows a summary and optionally performs final processing
@@ -596,7 +622,7 @@ async function finishConversation(
 // Register Conversations
 // ----------------------
 bot.use(
-    createConversation(image1Conversation, "image1Conversation")
+    createConversation(imageConversation, "imageConversation")
 );
 bot.use(
     createConversation(overlineConversation, "overlineConversation")
@@ -628,8 +654,8 @@ bot.use(
 export const formMenu = new Menu<MyContext>("form")
     .text((ctx) => {
         const data = collectFormData(ctx);
-        return data.Image1 ? "Image1 ✅" : "Image1 ❌";
-    }, (ctx) => ctx.conversation.enter("image1Conversation"))
+        return data.Image ? "Image ✅" : "Image ❌";
+    }, (ctx) => ctx.conversation.enter("imageConversation"))
     .row()
     .text((ctx) => {
         const data = collectFormData(ctx);
@@ -730,16 +756,17 @@ bot.command("start", async (ctx) => {
     const userId = ctx.from?.id;
     const userSpecificPath = `./assets/OutPut/generated_newspaper_image_${userId}.png`;
 
-    // 2. Store the path and send the initial menu
+    log(`User ${userId} started the bot`);
+
     ctx.session.outputPath = userSpecificPath;
 
-    // We'll display a default image initially
     const sentMessage = await ctx.replyWithPhoto(
         new InputFile("./assets/images/ZAMAN_EGTESAD_LOGO.png"),
         { reply_markup: formMenu }
     );
-    // Save this mainMessageId in your session so you can edit it later
+
     ctx.session.mainMessageId = sentMessage.message_id;
+    log(`Sent initial menu and stored mainMessageId: ${sentMessage.message_id}`);
 });
 
 
@@ -749,8 +776,9 @@ bot.api.setMyCommands([
 
 
 bot.catch((err) => {
-    console.error("Error in grammY:", err);
+    log("Global error handler caught:", err);
 });
+
 
 bot.start();
 console.log("Bot is running...");
