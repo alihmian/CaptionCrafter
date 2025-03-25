@@ -111,7 +111,6 @@ def calculate_font_size_to_fit(
     Example:
         optimal_size = calculate_font_size_to_fit("text", "font.ttf", 400, 200, 48, 12)
     """
-
     # Temporary image and draw object for measurements
     draw = create_temporary_draw(box_width, box_height)
 
@@ -181,6 +180,10 @@ def draw_text_in_box(
             - min_font_size (int): Min font size for auto-sizing (default 12).
             - is_rtl (bool): Whether the text is right-to-left (default True).
     """
+
+    if not text.strip():
+        return  # Empty or whitespace-only text, skip drawing
+
     # Extract box dimensions
     if len(box) == 4:
         box_left, box_top, box_width, box_height = box

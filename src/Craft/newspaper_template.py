@@ -114,7 +114,7 @@ def create_newspaper_image(
     )
 
     # Draw event texts.
-    event_y_positions_dict = {1: [250], 2: [230, 340], 3: [150, 260, 370]}
+    event_y_positions_dict = {1: [255], 2: [230, 340], 3: [150, 260, 370]}
     event_y_positions = event_y_positions_dict.get(num_events, [])
     event_font_size = 70
     for idx, event_text in enumerate(event_texts):
@@ -179,7 +179,7 @@ def create_newspaper_image(
     )
     draw_text_no_box(
         draw,
-        day_of_week(),
+        day_of_week(days_into_future=days_into_future),
         fonts["weekday"],
         *positions["weekday"],
         alignment="center",
@@ -196,11 +196,12 @@ def create_newspaper_image(
             watermark_path,
             position=watermark_position,  # 2-tuple position; scale factor applies
             scale=2.6,  # adjust scale as needed
-            opacity=0.7,  # 70% opacity
+            opacity=0.8,  # 80% opacity
             adaptive_color=True,  # adjust color based on underlying region
         )
 
     # Save the final image.
+    print("python code log: created news paper image.")
     base_img.convert("RGB").save(output_path, format="JPEG", quality=95)
 
 
